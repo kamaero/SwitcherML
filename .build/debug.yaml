@@ -1,0 +1,81 @@
+client:
+  name: basic
+  file-system: device-agnostic
+tools: {}
+targets:
+  "PackageStructure": ["<PackageStructure>"]
+  "SwitcherLM-arm64-apple-macosx26.0-debug.exe": ["<SwitcherLM-arm64-apple-macosx26.0-debug.exe>"]
+  "SwitcherLM-arm64-apple-macosx26.0-debug.module": ["<SwitcherLM-arm64-apple-macosx26.0-debug.module>"]
+  "main": ["<SwitcherLM-arm64-apple-macosx26.0-debug.exe>","<SwitcherLM-arm64-apple-macosx26.0-debug.module>"]
+  "test": ["<SwitcherLM-arm64-apple-macosx26.0-debug.exe>","<SwitcherLM-arm64-apple-macosx26.0-debug.module>"]
+default: "main"
+nodes:
+  "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/":
+    is-directory-structure: true
+    content-exclusion-patterns: [".git",".build"]
+  "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM":
+    is-mutated: true
+commands:
+  "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM-entitlement.plist":
+    tool: write-auxiliary-file
+    inputs: ["<entitlement-plist>","<com.apple.security.get-task-allow>"]
+    outputs: ["/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM-entitlement.plist"]
+    description: "Write auxiliary file /Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM-entitlement.plist"
+
+  "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/sources":
+    tool: write-auxiliary-file
+    inputs: ["<sources-file-list>","/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/AppDelegate.swift","/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/ExceptionsWindowController.swift","/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/InputSourceSwitcher.swift","/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/KeyboardMonitor.swift","/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/LayoutConverter.swift","/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/MLService.swift","/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/SpellCheckService.swift","/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/StatusBarController.swift","/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/TextReplacer.swift","/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/main.swift"]
+    outputs: ["/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/sources"]
+    description: "Write auxiliary file /Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/sources"
+
+  "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.product/Objects.LinkFileList":
+    tool: write-auxiliary-file
+    inputs: ["<link-file-list>","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/AppDelegate.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/ExceptionsWindowController.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/InputSourceSwitcher.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/KeyboardMonitor.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/LayoutConverter.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/MLService.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/SpellCheckService.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/StatusBarController.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/TextReplacer.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/main.swift.o"]
+    outputs: ["/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.product/Objects.LinkFileList"]
+    description: "Write auxiliary file /Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.product/Objects.LinkFileList"
+
+  "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/swift-version--1AB21518FC5DEDBE.txt":
+    tool: write-auxiliary-file
+    inputs: ["<swift-get-version>","/Library/Developer/CommandLineTools/usr/bin/swiftc"]
+    outputs: ["/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/swift-version--1AB21518FC5DEDBE.txt"]
+    always-out-of-date: "true"
+    description: "Write auxiliary file /Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/swift-version--1AB21518FC5DEDBE.txt"
+
+  "<SwitcherLM-arm64-apple-macosx26.0-debug.exe>":
+    tool: phony
+    inputs: ["<SwitcherLM-arm64-apple-macosx26.0-debug.exe-CodeSigning>"]
+    outputs: ["<SwitcherLM-arm64-apple-macosx26.0-debug.exe>"]
+
+  "<SwitcherLM-arm64-apple-macosx26.0-debug.module>":
+    tool: phony
+    inputs: ["/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/AppDelegate.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/ExceptionsWindowController.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/InputSourceSwitcher.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/KeyboardMonitor.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/LayoutConverter.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/MLService.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/SpellCheckService.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/StatusBarController.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/TextReplacer.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/main.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/Modules/SwitcherLM.swiftmodule"]
+    outputs: ["<SwitcherLM-arm64-apple-macosx26.0-debug.module>"]
+
+  "C.SwitcherLM-arm64-apple-macosx26.0-debug.exe":
+    tool: shell
+    inputs: ["/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/AppDelegate.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/ExceptionsWindowController.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/InputSourceSwitcher.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/KeyboardMonitor.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/LayoutConverter.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/MLService.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/SpellCheckService.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/StatusBarController.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/TextReplacer.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/main.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.product/Objects.LinkFileList"]
+    outputs: ["/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM"]
+    description: "Linking ./.build/arm64-apple-macosx/debug/SwitcherLM"
+    args: ["/Library/Developer/CommandLineTools/usr/bin/swiftc","-L","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug","-o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM","-module-name","SwitcherLM","-Xlinker","-no_warn_duplicate_libraries","-emit-executable","-Xlinker","-alias","-Xlinker","_SwitcherLM_main","-Xlinker","_main","-Xlinker","-rpath","-Xlinker","@loader_path","@/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.product/Objects.LinkFileList","-Xlinker","-rpath","-Xlinker","/Library/Developer/CommandLineTools/usr/lib/swift-6.2/macosx","-target","arm64-apple-macosx13.0","-framework","Cocoa","-framework","Carbon","-framework","CoreML","-framework","NaturalLanguage","-Xlinker","-add_ast_path","-Xlinker","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/Modules/SwitcherLM.swiftmodule","-I","/Library/Developer/CommandLineTools/Library/Developer/Frameworks","-L","/Library/Developer/CommandLineTools/Library/Developer/Frameworks","-plugin-path","/Library/Developer/CommandLineTools/usr/lib/swift/host/plugins/testing","-sdk","/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk","-g"]
+
+  "C.SwitcherLM-arm64-apple-macosx26.0-debug.exe-entitlements":
+    tool: shell
+    inputs: ["/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM-entitlement.plist"]
+    outputs: ["<SwitcherLM-arm64-apple-macosx26.0-debug.exe-CodeSigning>"]
+    description: "Applying debug entitlements to ./.build/arm64-apple-macosx/debug/SwitcherLM"
+    args: ["codesign","--force","--sign","-","--entitlements","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM-entitlement.plist","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM"]
+
+  "C.SwitcherLM-arm64-apple-macosx26.0-debug.module":
+    tool: shell
+    inputs: ["/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/AppDelegate.swift","/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/ExceptionsWindowController.swift","/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/InputSourceSwitcher.swift","/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/KeyboardMonitor.swift","/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/LayoutConverter.swift","/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/MLService.swift","/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/SpellCheckService.swift","/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/StatusBarController.swift","/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/TextReplacer.swift","/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/main.swift","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/swift-version--1AB21518FC5DEDBE.txt","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/sources"]
+    outputs: ["/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/AppDelegate.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/ExceptionsWindowController.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/InputSourceSwitcher.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/KeyboardMonitor.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/LayoutConverter.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/MLService.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/SpellCheckService.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/StatusBarController.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/TextReplacer.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/main.swift.o","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/Modules/SwitcherLM.swiftmodule"]
+    description: "Compiling Swift Module 'SwitcherLM' (10 sources)"
+    args: ["/Library/Developer/CommandLineTools/usr/bin/swiftc","-module-name","SwitcherLM","-emit-dependencies","-emit-module","-emit-module-path","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/Modules/SwitcherLM.swiftmodule","-output-file-map","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/output-file-map.json","-incremental","-c","@/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/SwitcherLM.build/sources","-I","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/Modules","-target","arm64-apple-macosx13.0","-incremental","-enable-batch-mode","-serialize-diagnostics","-index-store-path","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/index/store","-Onone","-enable-testing","-j10","-DSWIFT_PACKAGE","-DDEBUG","-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE","-module-cache-path","/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/debug/ModuleCache","-parseable-output","-Xfrontend","-entry-point-function-name","-Xfrontend","SwitcherLM_main","-swift-version","5","-I","/Library/Developer/CommandLineTools/Library/Developer/Frameworks","-L","/Library/Developer/CommandLineTools/Library/Developer/Frameworks","-plugin-path","/Library/Developer/CommandLineTools/usr/lib/swift/host/plugins/testing","-sdk","/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk","-g","-Xcc","-isysroot","-Xcc","/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk","-Xcc","-fPIC","-Xcc","-g","-package-name","switcherlm"]
+
+  "PackageStructure":
+    tool: package-structure-tool
+    inputs: ["/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/","/Users/xkr/Projects/SwitcherLM/Package.swift","/Users/xkr/Projects/SwitcherLM/Package.resolved"]
+    outputs: ["<PackageStructure>"]
+    description: "Planning build"
+    allow-missing-inputs: true
+
