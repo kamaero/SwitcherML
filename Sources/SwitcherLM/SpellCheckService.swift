@@ -106,7 +106,7 @@ final class SpellCheckService {
 
     // MARK: - Heuristics
 
-    private func isLikelyURLOrPath(_ word: String) -> Bool {
+    static func isLikelyURLOrPath(_ word: String) -> Bool {
         let lower = word.lowercased()
         if lower.contains("://") || lower.hasPrefix("www.") {
             return true
@@ -121,7 +121,7 @@ final class SpellCheckService {
         return false
     }
 
-    private func isLikelyEmail(_ word: String) -> Bool {
+    static func isLikelyEmail(_ word: String) -> Bool {
         guard let atIndex = word.firstIndex(of: "@") else { return false }
         let local = word[..<atIndex]
         let domain = word[word.index(after: atIndex)...]
