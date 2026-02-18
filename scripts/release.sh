@@ -65,4 +65,8 @@ new_version="${major}.${minor}.${patch}"
 
 echo "Version bump: ${current_version} -> ${new_version}"
 
-"${PROJECT_DIR}/scripts/install.sh" "${ARGS[@]}"
+if ((${#ARGS[@]})); then
+    "${PROJECT_DIR}/scripts/install.sh" "${ARGS[@]}"
+else
+    "${PROJECT_DIR}/scripts/install.sh"
+fi
