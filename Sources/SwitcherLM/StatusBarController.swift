@@ -8,14 +8,14 @@ final class StatusBarController {
 
     private var enabledMenuItem: NSMenuItem!
     private var statsMenuItem: NSMenuItem!
+    private var todayStatsMenuItem: NSMenuItem!
 
     var onToggleEnabled: ((Bool) -> Void)?
     var onShowExceptions: (() -> Void)?
     var onShowSettings: (() -> Void)?
 
     private(set) var isEnabled: Bool = true
-    private var wordsConverted: Int = 0
-    private var wordsRejected: Int = 0
+    private let statsManager = StatsManager.shared
 
     func setup() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
@@ -30,12 +30,12 @@ final class StatusBarController {
     }
 
     func incrementStats() {
-        wordsConverted += 1
+        statsManager.recordConverted()
         updateStatsMenuItem()
     }
 
     func incrementRejections() {
-        wordsRejected += 1
+        statsManager.recordRejected()
         updateStatsMenuItem()
     }
 
@@ -82,9 +82,13 @@ final class StatusBarController {
         menu.addItem(settingsItem)
 
         // Statistics
-        statsMenuItem = NSMenuItem(title: "Converted: 0 | Rejected: 0", action: nil, keyEquivalent: "")
+        statsMenuItem = NSMenuItem(title: "Total: 0 | Rejected: 0", action: nil, keyEquivalent: "")
         statsMenuItem.isEnabled = false
         menu.addItem(statsMenuItem)
+
+        todayStatsMenuItem = NSMenuItem(title: "Today: 0 | Rejected: 0", action: nil, keyEquivalent: "")
+        todayStatsMenuItem.isEnabled = false
+        menu.addItem(todayStatsMenuItem)
 
         // Hint
         let hintItem = NSMenuItem(title: "⇧⇧ Double-Shift to force convert", action: nil, keyEquivalent: "")
@@ -102,10 +106,13 @@ final class StatusBarController {
         quitItem.keyEquivalentModifierMask = [.command]
         quitItem.target = self
         menu.addItem(quitItem)
+
+        updateStatsMenuItem()
     }
 
     private func updateStatsMenuItem() {
-        statsMenuItem.title = "Converted: \(wordsConverted) | Rejected: \(wordsRejected)"
+        statsMenuItem.title = "Total: \(statsManager.totalConverted) | Rejected: \(statsManager.totalRejected)"
+        todayStatsMenuItem.title = "Today: \(statsManager.todayConverted) | Rejected: \(statsManager.todayRejected)"
     }
 
     @objc private func toggleEnabled() {
