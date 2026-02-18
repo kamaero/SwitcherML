@@ -18,6 +18,32 @@ log()  { echo -e "${GREEN}[✓]${NC} $1"; }
 warn() { echo -e "${YELLOW}[!]${NC} $1"; }
 err()  { echo -e "${RED}[✗]${NC} $1"; exit 1; }
 
+VERBOSE=0
+NO_LAUNCH=0
+NON_INTERACTIVE=0
+
+for arg in "$@"; do
+    case "$arg" in
+        --verbose)
+            VERBOSE=1
+            ;;
+        --no-launch)
+            NO_LAUNCH=1
+            ;;
+        --non-interactive)
+            NON_INTERACTIVE=1
+            NO_LAUNCH=1
+            ;;
+    esac
+done
+
+run() {
+    if [[ "$VERBOSE" -eq 1 ]]; then
+        echo "+ $*"
+    fi
+    "$@"
+}
+
 # ── 1. Build ────────────────────────────────────────────────
 echo ""
 echo "═══════════════════════════════════════════"
@@ -34,7 +60,11 @@ if [[ "${1:-}" == "--debug" ]]; then
 fi
 
 log "Building (${CONFIG})..."
-swift build -c "$CONFIG" 2>&1 | tail -5
+if [[ "$VERBOSE" -eq 1 ]]; then
+    run swift build -c "$CONFIG"
+else
+    swift build -c "$CONFIG" 2>&1 | tail -5
+fi
 
 BINARY=".build/${CONFIG}/${APP_NAME}"
 if [[ ! -f "$BINARY" ]]; then
@@ -78,15 +108,15 @@ if [[ -d "$INSTALL_PATH" ]]; then
 fi
 
 log "Installing to ${INSTALL_PATH}..."
-cp -R "$STAGING" "$INSTALL_PATH"
+run cp -R "$STAGING" "$INSTALL_PATH"
 
 # ── 5. Clear quarantine (important for CGEvent tap) ─────────
-xattr -cr "$INSTALL_PATH" 2>/dev/null || true
+run xattr -cr "$INSTALL_PATH" 2>/dev/null || true
 
 # ── 6. Reset TCC if requested ──────────────────────────────
 if [[ "${1:-}" == "--reset-permissions" || "${2:-}" == "--reset-permissions" ]]; then
     warn "Resetting Accessibility permissions for ${BUNDLE_ID}..."
-    tccutil reset Accessibility "$BUNDLE_ID" 2>/dev/null || true
+    run tccutil reset Accessibility "$BUNDLE_ID" 2>/dev/null || true
     log "Permissions reset. You will be prompted again on launch."
 fi
 
@@ -95,9 +125,21 @@ echo ""
 log "Installation complete."
 echo ""
 
+if [[ "$NO_LAUNCH" -eq 1 ]]; then
+    echo "Launch skipped (--no-launch)."
+    echo "To launch manually:"
+    echo "   open ${INSTALL_PATH}"
+    echo ""
+    exit 0
+fi
+
+if [[ "$NON_INTERACTIVE" -eq 1 ]]; then
+    exit 0
+fi
+
 read -rp "Launch ${APP_NAME} now? [Y/n] " answer
 if [[ "${answer:-Y}" =~ ^[Yy]$ ]]; then
-    open "$INSTALL_PATH"
+    run open "$INSTALL_PATH"
     log "Launched. Look for the ⌨ icon in the menu bar."
     echo ""
     warn "If this is the first run, grant Accessibility access:"

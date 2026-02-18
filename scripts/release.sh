@@ -6,7 +6,7 @@ PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 INFO_PLIST="${PROJECT_DIR}/Info.plist"
 
 usage() {
-    echo "Usage: $0 [--major|--minor|--patch] [--debug] [--reset-permissions]"
+    echo "Usage: $0 [--major|--minor|--patch] [--debug] [--reset-permissions] [--no-launch] [--non-interactive] [--verbose]"
 }
 
 if [[ ! -f "$INFO_PLIST" ]]; then
@@ -21,7 +21,7 @@ for arg in "$@"; do
         --major|--minor|--patch)
             BUMP="${arg#--}"
             ;;
-        --debug|--reset-permissions)
+        --debug|--reset-permissions|--no-launch|--non-interactive|--verbose)
             ARGS+=("$arg")
             ;;
         -h|--help)
