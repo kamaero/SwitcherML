@@ -75,7 +75,7 @@ final class SpellCheckService {
         }
 
         // Skip URLs, emails, and file paths
-        if settings.skipURLsAndEmail && (isLikelyURLOrPath(word) || isLikelyEmail(word)) {
+        if settings.skipURLsAndEmail && (Self.isLikelyURLOrPath(word) || Self.isLikelyEmail(word)) {
             return nil
         }
 
