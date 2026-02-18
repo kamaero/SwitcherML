@@ -15,6 +15,11 @@ let package = Package(
             resources: [
                 .copy("Layouts.json")
             ]
+        ),
+        .testTarget(
+            name: "SwitcherLMTests",
+            dependencies: ["SwitcherLM"],
+            path: "Tests/SwitcherLMTests"
         )
     ]
 )
