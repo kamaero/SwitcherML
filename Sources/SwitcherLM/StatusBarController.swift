@@ -43,7 +43,8 @@ final class StatusBarController {
         menu = NSMenu()
 
         // App title
-        let titleItem = NSMenuItem(title: "SwitcherLM v1.1.0", action: nil, keyEquivalent: "")
+        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0.0.0"
+        let titleItem = NSMenuItem(title: "SwitcherLM v\(version)", action: nil, keyEquivalent: "")
         titleItem.isEnabled = false
         menu.addItem(titleItem)
 
