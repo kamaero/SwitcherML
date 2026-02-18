@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Swift
+        uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "5.9"
+
+      - name: Build
+        run: swift build -c release
+
+      - name: Archive app bundle
+        run: |
+          mkdir -p artifacts
+          APP_PATH=$(find .build -name "SwitcherLM.app" -type d | head -n 1)
+          if [ -z "$APP_PATH" ]; then
+            echo "No .app bundle found"
+            exit 1
+          fi
+          ditto "$APP_PATH" "artifacts/SwitcherLM.app"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SwitcherLM.app
+          path: artifacts/SwitcherLM.app
