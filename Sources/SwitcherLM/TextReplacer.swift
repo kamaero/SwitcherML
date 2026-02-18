@@ -65,6 +65,7 @@ final class TextReplacer {
         ) else { return }
 
         event.flags = flags
+        event.setIntegerValueField(.eventSourceUserData, value: EventMarker.userData)
         event.post(tap: .cghidEventTap)
     }
 }

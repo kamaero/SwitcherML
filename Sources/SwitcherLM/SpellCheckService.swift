@@ -4,6 +4,9 @@ import AppKit
 final class SpellCheckService {
 
     private let checker = NSSpellChecker.shared
+    private var cache: [String: Bool] = [:]
+    private var cacheOrder: [String] = []
+    private let cacheLimit = 500
 
     /// Check if a word is valid in the given language.
     /// - Parameters:
@@ -11,6 +14,10 @@ final class SpellCheckService {
     ///   - language: BCP-47 language tag, e.g. "en" or "ru".
     /// - Returns: `true` if the word is recognized by the spell checker.
     func isValid(word: String, language: String) -> Bool {
+        let cacheKey = "\(language)|\(word)"
+        if let cached = cache[cacheKey] {
+            return cached
+        }
         let range = checker.checkSpelling(
             of: word,
             startingAt: 0,
@@ -20,7 +27,14 @@ final class SpellCheckService {
             wordCount: nil
         )
         // If range.location == NSNotFound, no misspelling was found → word is valid
-        return range.location == NSNotFound
+        let isValid = range.location == NSNotFound
+        cache[cacheKey] = isValid
+        cacheOrder.append(cacheKey)
+        if cacheOrder.count > cacheLimit {
+            let oldest = cacheOrder.removeFirst()
+            cache.removeValue(forKey: oldest)
+        }
+        return isValid
     }
 
     /// Check if a word is valid in English.
@@ -40,6 +54,11 @@ final class SpellCheckService {
 
         // Skip exceptions
         if exceptions.contains(lowered) {
+            return nil
+        }
+
+        // Skip tokens with mixed scripts or no letters
+        if LayoutConverter.isMixedScript(word) || !LayoutConverter.hasLetters(word) {
             return nil
         }
 

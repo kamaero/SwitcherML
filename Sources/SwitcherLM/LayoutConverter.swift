@@ -38,20 +38,44 @@ struct LayoutConverter {
         return map
     }()
 
+    private static func scriptStats(_ text: String) -> (latin: Int, cyrillic: Int, letters: Int) {
+        var latin = 0
+        var cyrillic = 0
+        var letters = 0
+        for scalar in text.unicodeScalars {
+            if ("a"..."z").contains(scalar) || ("A"..."Z").contains(scalar) {
+                latin += 1
+                letters += 1
+            } else if ("а"..."я").contains(scalar) || ("А"..."Я").contains(scalar) || scalar == "ё" || scalar == "Ё" {
+                cyrillic += 1
+                letters += 1
+            }
+        }
+        return (latin, cyrillic, letters)
+    }
+
     /// Detects whether the string is predominantly Cyrillic.
     static func isCyrillic(_ text: String) -> Bool {
-        let cyrillic = text.unicodeScalars.filter {
-            ("а"..."я").contains($0) || ("А"..."Я").contains($0) || $0 == "ё" || $0 == "Ё"
-        }.count
-        return cyrillic > text.count / 2
+        let stats = scriptStats(text)
+        return stats.cyrillic > stats.letters / 2
     }
 
     /// Detects whether the string is predominantly Latin.
     static func isLatin(_ text: String) -> Bool {
-        let latin = text.unicodeScalars.filter {
-            ("a"..."z").contains($0) || ("A"..."Z").contains($0)
-        }.count
-        return latin > text.count / 2
+        let stats = scriptStats(text)
+        return stats.latin > stats.letters / 2
+    }
+
+    /// Returns true when the text contains both Latin and Cyrillic letters.
+    static func isMixedScript(_ text: String) -> Bool {
+        let stats = scriptStats(text)
+        return stats.latin > 0 && stats.cyrillic > 0
+    }
+
+    /// Returns true when the text contains at least one letter.
+    static func hasLetters(_ text: String) -> Bool {
+        let stats = scriptStats(text)
+        return stats.letters > 0
     }
 
     /// Convert EN-typed text to RU.

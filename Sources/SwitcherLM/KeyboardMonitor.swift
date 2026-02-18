@@ -117,6 +117,10 @@ final class KeyboardMonitor {
     fileprivate func handleFlagsChanged(_ event: CGEvent) {
         guard isEnabled else { return }
 
+        if event.getIntegerValueField(.eventSourceUserData) == EventMarker.userData {
+            return
+        }
+
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
         let flags = event.flags
 
@@ -140,6 +144,10 @@ final class KeyboardMonitor {
     /// Process a keyDown event. Returns nil to suppress the event, or the event to pass through.
     fileprivate func handleKeyEvent(_ event: CGEvent) -> CGEvent? {
         guard isEnabled else { return event }
+
+        if event.getIntegerValueField(.eventSourceUserData) == EventMarker.userData {
+            return event
+        }
 
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
 
@@ -175,6 +183,8 @@ final class KeyboardMonitor {
             let str = String(utf16CodeUnits: chars, count: length)
             for ch in str {
                 if ch.isLetter || ch.isNumber {
+                    currentWord.append(ch)
+                } else if isJoiner(ch), !currentWord.isEmpty {
                     currentWord.append(ch)
                 } else {
                     // Punctuation/symbol acts as word boundary
@@ -248,6 +258,10 @@ final class KeyboardMonitor {
         case Int64(kVK_Tab):    return "\t"
         default:                return " "
         }
+    }
+
+    private func isJoiner(_ ch: Character) -> Bool {
+        ch == "'" || ch == "-" || ch == "’"
     }
 }
 
