@@ -104,13 +104,65 @@ struct LayoutConverter {
     /// Convert preserving the original capitalization pattern.
     static func convertPreservingCase(_ text: String) -> String {
         let converted = convert(text)
-        guard let first = text.first, let convertedFirst = converted.first else {
+        let originalLetters = text.filter { $0.isLetter }
+        let convertedLetters = converted.filter { $0.isLetter }
+
+        guard !originalLetters.isEmpty, originalLetters.count == convertedLetters.count else {
             return converted
         }
-        // If original starts uppercase, ensure result does too
-        if first.isUppercase && convertedFirst.isLowercase {
-            return convertedFirst.uppercased() + converted.dropFirst()
+
+        if originalLetters.allSatisfy({ $0.isUppercase }) {
+            return converted.uppercased()
         }
-        return converted
+
+        if originalLetters.allSatisfy({ $0.isLowercase }) {
+            return converted.lowercased()
+        }
+
+        if isTitleCase(originalLetters) {
+            return converted.capitalizedFirstLetterOnly()
+        }
+
+        return applyPerCharacterCase(from: text, to: converted)
+    }
+
+    private static func isTitleCase(_ letters: String) -> Bool {
+        guard let first = letters.first else { return false }
+        if !first.isUppercase { return false }
+        return letters.dropFirst().allSatisfy { $0.isLowercase }
+    }
+
+    private static func applyPerCharacterCase(from original: String, to converted: String) -> String {
+        let originalChars = Array(original)
+        let convertedChars = Array(converted)
+        guard originalChars.count == convertedChars.count else { return converted }
+
+        var result: [Character] = []
+        result.reserveCapacity(convertedChars.count)
+
+        for idx in 0..<convertedChars.count {
+            let o = originalChars[idx]
+            let c = convertedChars[idx]
+            if o.isLetter {
+                if o.isUppercase {
+                    result.append(c.uppercased().first ?? c)
+                } else {
+                    result.append(c.lowercased().first ?? c)
+                }
+            } else {
+                result.append(c)
+            }
+        }
+
+        return String(result)
+    }
+}
+
+private extension String {
+    func capitalizedFirstLetterOnly() -> String {
+        guard let first = self.first else { return self }
+        let head = String(first).uppercased()
+        let tail = self.dropFirst().lowercased()
+        return head + tail
     }
 }
