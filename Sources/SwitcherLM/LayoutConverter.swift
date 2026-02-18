@@ -1,42 +1,12 @@
 import Foundation
 
-/// Converts text between QWERTY (EN) and ЙЦУКЕН (RU) keyboard layouts.
+/// Converts text between configured keyboard layouts.
 struct LayoutConverter {
 
-    // QWERTY → ЙЦУКЕН mapping (lowercase)
-    private static let enToRu: [Character: Character] = [
-        "q": "й", "w": "ц", "e": "у", "r": "к", "t": "е",
-        "y": "н", "u": "г", "i": "ш", "o": "щ", "p": "з",
-        "[": "х", "]": "ъ", "a": "ф", "s": "ы", "d": "в",
-        "f": "а", "g": "п", "h": "р", "j": "о", "k": "л",
-        "l": "д", ";": "ж", "'": "э", "z": "я", "x": "ч",
-        "c": "с", "v": "м", "b": "и", "n": "т", "m": "ь",
-        ",": "б", ".": "ю", "/": ".", "`": "ё",
-    ]
-
-    // QWERTY → ЙЦУКЕН mapping (uppercase / shifted)
-    private static let enToRuUpper: [Character: Character] = [
-        "Q": "Й", "W": "Ц", "E": "У", "R": "К", "T": "Е",
-        "Y": "Н", "U": "Г", "I": "Ш", "O": "Щ", "P": "З",
-        "{": "Х", "}": "Ъ", "A": "Ф", "S": "Ы", "D": "В",
-        "F": "А", "G": "П", "H": "Р", "J": "О", "K": "Л",
-        "L": "Д", ":": "Ж", "\"": "Э", "Z": "Я", "X": "Ч",
-        "C": "С", "V": "М", "B": "И", "N": "Т", "M": "Ь",
-        "<": "Б", ">": "Ю", "?": ",", "~": "Ё",
-    ]
-
-    // Reverse mapping: ЙЦУКЕН → QWERTY
-    private static let ruToEn: [Character: Character] = {
-        var map = [Character: Character]()
-        for (en, ru) in enToRu { map[ru] = en }
-        return map
-    }()
-
-    private static let ruToEnUpper: [Character: Character] = {
-        var map = [Character: Character]()
-        for (en, ru) in enToRuUpper { map[ru] = en }
-        return map
-    }()
+    private static let config = LayoutConfigLoader.load()
+    private static let activePair = config.activePair
+    private static let mapLeftToRight = config.leftToRightMap
+    private static let mapRightToLeft = config.rightToLeftMap
 
     private static func scriptStats(_ text: String) -> (latin: Int, cyrillic: Int, letters: Int) {
         var latin = 0
@@ -80,25 +50,20 @@ struct LayoutConverter {
 
     /// Convert EN-typed text to RU.
     static func enToRussian(_ text: String) -> String {
-        String(text.map { ch in
-            enToRuUpper[ch] ?? enToRu[ch] ?? ch
-        })
+        convert(text, using: mapLeftToRight)
     }
 
     /// Convert RU-typed text to EN.
     static func ruToEnglish(_ text: String) -> String {
-        String(text.map { ch in
-            ruToEnUpper[ch] ?? ruToEn[ch] ?? ch
-        })
+        convert(text, using: mapRightToLeft)
     }
 
     /// Convert text to the opposite layout.
     static func convert(_ text: String) -> String {
         if isCyrillic(text) {
-            return ruToEnglish(text)
-        } else {
-            return enToRussian(text)
+            return convert(text, using: mapRightToLeft)
         }
+        return convert(text, using: mapLeftToRight)
     }
 
     /// Convert preserving the original capitalization pattern.
@@ -155,6 +120,12 @@ struct LayoutConverter {
         }
 
         return String(result)
+    }
+
+    private static func convert(_ text: String, using map: [Character: Character]) -> String {
+        String(text.map { ch in
+            map[ch] ?? ch
+        })
     }
 }
 

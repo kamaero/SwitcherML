@@ -11,6 +11,9 @@ let package = Package(
             linkerSettings: [
                 .linkedFramework("Cocoa"),
                 .linkedFramework("Carbon"),
+            ],
+            resources: [
+                .copy("Layouts.json")
             ]
         )
     ]
