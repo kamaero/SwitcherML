@@ -48,6 +48,17 @@ struct LayoutConverter {
         return stats.letters > 0
     }
 
+    /// Returns true when a key maps to a letter in either direction.
+    static func isConvertibleLetterKey(_ ch: Character) -> Bool {
+        if let mapped = mapLeftToRight[ch], mapped.isLetter {
+            return true
+        }
+        if let mapped = mapRightToLeft[ch], mapped.isLetter {
+            return true
+        }
+        return false
+    }
+
     /// Convert EN-typed text to RU.
     static func enToRussian(_ text: String) -> String {
         convert(text, using: mapLeftToRight)

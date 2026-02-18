@@ -58,6 +58,11 @@ final class SpellCheckService {
             return nil
         }
 
+        // Single-letter smart conversion
+        if word.count == 1 {
+            return singleLetterSuggestion(for: word)
+        }
+
         // Skip tokens with mixed scripts or no letters
         if LayoutConverter.isMixedScript(word) || !LayoutConverter.hasLetters(word) {
             return nil
@@ -65,12 +70,6 @@ final class SpellCheckService {
 
         // Skip very long tokens (likely IDs or pasted content)
         if word.count > settings.maxWordLength {
-            return nil
-        }
-
-        // Single-char words are too ambiguous for auto-conversion (e.g. I↔Ш)
-        // Use double-LShift to force-convert these manually
-        if word.count < 2 {
             return nil
         }
 
@@ -97,6 +96,37 @@ final class SpellCheckService {
             // Try converting to English
             let converted = LayoutConverter.convertPreservingCase(word)
             if isValidEnglish(converted) {
+                return converted
+            }
+        }
+
+        return nil
+    }
+
+    private func singleLetterSuggestion(for word: String) -> String? {
+        if !settings.singleLetterAutoConvert {
+            return nil
+        }
+
+        guard LayoutConverter.hasLetters(word) else { return nil }
+
+        let lower = word.lowercased()
+
+        if LayoutConverter.isLatin(word) {
+            if lower == "a" || lower == "i" {
+                return nil
+            }
+            let converted = LayoutConverter.convertPreservingCase(word)
+            return LayoutConverter.isCyrillic(converted) ? converted : nil
+        }
+
+        if LayoutConverter.isCyrillic(word) {
+            if lower == "а" || lower == "я" || lower == "и" {
+                return nil
+            }
+            let converted = LayoutConverter.convertPreservingCase(word)
+            let convertedLower = converted.lowercased()
+            if convertedLower == "a" || convertedLower == "i" {
                 return converted
             }
         }

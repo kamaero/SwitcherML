@@ -10,6 +10,7 @@ final class SettingsManager {
     private enum Key {
         static let autoConvertEnabled = "SwitcherLM_AutoConvertEnabled"
         static let doubleShiftEnabled = "SwitcherLM_DoubleShiftEnabled"
+        static let singleLetterAutoConvert = "SwitcherLM_SingleLetterAutoConvert"
         static let rejectionThreshold = "SwitcherLM_RejectionThreshold"
         static let maxWordLength = "SwitcherLM_MaxWordLength"
         static let skipURLsAndEmail = "SwitcherLM_SkipURLsAndEmail"
@@ -25,6 +26,11 @@ final class SettingsManager {
     var doubleShiftEnabled: Bool {
         get { defaults.object(forKey: Key.doubleShiftEnabled) as? Bool ?? true }
         set { defaults.set(newValue, forKey: Key.doubleShiftEnabled); notify() }
+    }
+
+    var singleLetterAutoConvert: Bool {
+        get { defaults.object(forKey: Key.singleLetterAutoConvert) as? Bool ?? true }
+        set { defaults.set(newValue, forKey: Key.singleLetterAutoConvert); notify() }
     }
 
     var rejectionThreshold: Int {

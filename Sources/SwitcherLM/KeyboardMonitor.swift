@@ -192,7 +192,7 @@ final class KeyboardMonitor {
         if length > 0 {
             let str = String(utf16CodeUnits: chars, count: length)
             for ch in str {
-                if ch.isLetter || ch.isNumber {
+                if ch.isLetter || ch.isNumber || LayoutConverter.isConvertibleLetterKey(ch) {
                     currentWord.append(ch)
                 } else if isJoiner(ch), !currentWord.isEmpty {
                     currentWord.append(ch)

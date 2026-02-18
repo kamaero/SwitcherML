@@ -8,6 +8,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
 
     private var autoConvertCheckbox: NSButton?
     private var doubleShiftCheckbox: NSButton?
+    private var singleLetterCheckbox: NSButton?
     private var skipURLsCheckbox: NSButton?
 
     private var rejectionField: NSTextField?
@@ -54,6 +55,10 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         let doubleShift = checkbox(title: "Enable double-Shift force convert", action: #selector(toggleDoubleShift))
         doubleShiftCheckbox = doubleShift
         stack.addArrangedSubview(doubleShift)
+
+        let singleLetter = checkbox(title: "Smart single-letter auto-convert", action: #selector(toggleSingleLetter))
+        singleLetterCheckbox = singleLetter
+        stack.addArrangedSubview(singleLetter)
 
         let skipURLs = checkbox(title: "Skip URLs, emails, and file paths", action: #selector(toggleSkipURLs))
         skipURLsCheckbox = skipURLs
@@ -165,6 +170,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
     private func syncFromSettings() {
         autoConvertCheckbox?.state = settings.autoConvertEnabled ? .on : .off
         doubleShiftCheckbox?.state = settings.doubleShiftEnabled ? .on : .off
+        singleLetterCheckbox?.state = settings.singleLetterAutoConvert ? .on : .off
         skipURLsCheckbox?.state = settings.skipURLsAndEmail ? .on : .off
 
         rejectionStepper?.integerValue = settings.rejectionThreshold
@@ -222,6 +228,10 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
 
     @objc private func toggleDoubleShift() {
         settings.doubleShiftEnabled = doubleShiftCheckbox?.state == .on
+    }
+
+    @objc private func toggleSingleLetter() {
+        settings.singleLetterAutoConvert = singleLetterCheckbox?.state == .on
     }
 
     @objc private func toggleSkipURLs() {
