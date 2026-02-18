@@ -11,6 +11,7 @@ final class StatusBarController {
 
     var onToggleEnabled: ((Bool) -> Void)?
     var onShowExceptions: (() -> Void)?
+    var onShowSettings: (() -> Void)?
 
     private(set) var isEnabled: Bool = true
     private var wordsConverted: Int = 0
@@ -70,6 +71,16 @@ final class StatusBarController {
         exceptionsItem.target = self
         menu.addItem(exceptionsItem)
 
+        // Settings
+        let settingsItem = NSMenuItem(
+            title: "Settings...",
+            action: #selector(showSettings),
+            keyEquivalent: ","
+        )
+        settingsItem.keyEquivalentModifierMask = [.command]
+        settingsItem.target = self
+        menu.addItem(settingsItem)
+
         // Statistics
         statsMenuItem = NSMenuItem(title: "Converted: 0 | Rejected: 0", action: nil, keyEquivalent: "")
         statsMenuItem.isEnabled = false
@@ -105,6 +116,10 @@ final class StatusBarController {
 
     @objc private func showExceptions() {
         onShowExceptions?()
+    }
+
+    @objc private func showSettings() {
+        onShowSettings?()
     }
 
     @objc private func quit() {

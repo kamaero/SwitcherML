@@ -21,14 +21,21 @@ struct InputSourceSwitcher {
         "com.apple.keylayout.Russian-Phonetic",
     ]
 
+    struct InputSourceInfo {
+        let id: String
+        let name: String
+    }
+
     /// Switch to English keyboard layout.
     static func switchToEnglish() {
-        switchTo(candidates: englishAlternatives)
+        let preferred = SettingsManager.shared.preferredEnglishSourceID
+        switchTo(preferred: preferred, candidates: englishAlternatives)
     }
 
     /// Switch to Russian keyboard layout.
     static func switchToRussian() {
-        switchTo(candidates: russianAlternatives)
+        let preferred = SettingsManager.shared.preferredRussianSourceID
+        switchTo(preferred: preferred, candidates: russianAlternatives)
     }
 
     /// Switch to the layout matching the target language of a conversion.
@@ -53,26 +60,68 @@ struct InputSourceSwitcher {
         return Unmanaged<CFString>.fromOpaque(idPtr).takeUnretainedValue() as String
     }
 
+    /// List available keyboard input sources (id + localized name).
+    static func availableInputSources() -> [InputSourceInfo] {
+        guard let sources = TISCreateInputSourceList(nil, false)?
+            .takeRetainedValue() as? [TISInputSource] else {
+            return []
+        }
+
+        var result: [InputSourceInfo] = []
+        for source in sources {
+            guard let idPtr = TISGetInputSourceProperty(source, kTISPropertyInputSourceID),
+                  let namePtr = TISGetInputSourceProperty(source, kTISPropertyLocalizedName),
+                  let typePtr = TISGetInputSourceProperty(source, kTISPropertyInputSourceType) else {
+                continue
+            }
+            let sourceID = Unmanaged<CFString>.fromOpaque(idPtr).takeUnretainedValue() as String
+            let name = Unmanaged<CFString>.fromOpaque(namePtr).takeUnretainedValue() as String
+            let type = Unmanaged<CFString>.fromOpaque(typePtr).takeUnretainedValue() as String
+
+            if type != (kTISTypeKeyboardLayout as String) && type != (kTISTypeKeyboardInputMode as String) {
+                continue
+            }
+
+            result.append(InputSourceInfo(id: sourceID, name: name))
+        }
+
+        return result.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+    }
+
     // MARK: - Private
 
-    private static func switchTo(candidates: [String]) {
+    private static func switchTo(preferred: String?, candidates: [String]) {
         guard let sources = TISCreateInputSourceList(nil, false)?.takeRetainedValue() as? [TISInputSource] else {
             return
         }
 
-        for candidate in candidates {
-            for source in sources {
-                guard let idPtr = TISGetInputSourceProperty(source, kTISPropertyInputSourceID) else {
-                    continue
-                }
-                let sourceID = Unmanaged<CFString>.fromOpaque(idPtr).takeUnretainedValue() as String
-                if sourceID == candidate {
-                    TISSelectInputSource(source)
-                    return
-                }
+        if let preferred {
+            if let match = findSource(id: preferred, in: sources) {
+                TISSelectInputSource(match)
+                return
             }
         }
 
-        print("InputSourceSwitcher: No matching input source found for candidates: \(candidates)")
+        for candidate in candidates {
+            if let match = findSource(id: candidate, in: sources) {
+                TISSelectInputSource(match)
+                return
+            }
+        }
+
+        print("InputSourceSwitcher: No matching input source found for preferred: \(preferred ?? "nil"), candidates: \(candidates)")
+    }
+
+    private static func findSource(id: String, in sources: [TISInputSource]) -> TISInputSource? {
+        for source in sources {
+            guard let idPtr = TISGetInputSourceProperty(source, kTISPropertyInputSourceID) else {
+                continue
+            }
+            let sourceID = Unmanaged<CFString>.fromOpaque(idPtr).takeUnretainedValue() as String
+            if sourceID == id {
+                return source
+            }
+        }
+        return nil
     }
 }

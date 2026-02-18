@@ -27,6 +27,7 @@ final class KeyboardMonitor {
     // -- Double LShift detection --
     private var lastLShiftUpTime: TimeInterval = 0
     private let doubleTapInterval: TimeInterval = 0.35
+    private let settings = SettingsManager.shared
 
     // -- Backspace rejection tracking --
     /// The last conversion that happened: (original, replacement)
@@ -123,6 +124,10 @@ final class KeyboardMonitor {
         guard isEnabled else { return }
 
         if event.getIntegerValueField(.eventSourceUserData) == EventMarker.userData {
+            return
+        }
+
+        if !settings.doubleShiftEnabled {
             return
         }
 

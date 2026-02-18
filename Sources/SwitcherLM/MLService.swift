@@ -6,7 +6,9 @@ import Foundation
 final class MLService {
 
     /// Number of rejections needed before auto-adding to exceptions.
-    let rejectionThreshold: Int = 3
+    private var rejectionThreshold: Int {
+        SettingsManager.shared.rejectionThreshold
+    }
 
     /// Tracks how many times each word's conversion was rejected.
     private var rejectionCounts: [String: Int] = [:]

@@ -9,7 +9,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let textReplacer = TextReplacer()
     private let mlService = MLService()
     private let exceptionsManager = ExceptionsManager()
+    private let settings = SettingsManager.shared
     private var exceptionsWindowController: ExceptionsWindowController?
+    private var settingsWindowController: SettingsWindowController?
 
     /// Tracks whether we're currently performing a replacement (to ignore our own events).
     private var isReplacing = false
@@ -33,6 +35,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self?.showExceptionsWindow()
         }
 
+        statusBarController.onShowSettings = { [weak self] in
+            self?.showSettingsWindow()
+        }
+
         mlService.onAutoException = { [weak self] word in
             self?.exceptionsManager.add(word)
             print("Auto-exception added: \"\(word)\"")
@@ -41,6 +47,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // Should we convert this word?
         keyboardMonitor.shouldConvert = { [weak self] word in
             guard let self, !self.isReplacing else { return nil }
+
+            if !self.settings.autoConvertEnabled {
+                return nil
+            }
 
             if self.exceptionsManager.contains(word) {
                 return nil
@@ -186,5 +196,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             exceptionsWindowController = ExceptionsWindowController(manager: exceptionsManager)
         }
         exceptionsWindowController?.showWindow()
+    }
+
+    private func showSettingsWindow() {
+        if settingsWindowController == nil {
+            settingsWindowController = SettingsWindowController()
+        }
+        settingsWindowController?.showWindow()
     }
 }

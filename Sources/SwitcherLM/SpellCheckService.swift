@@ -4,10 +4,10 @@ import AppKit
 final class SpellCheckService {
 
     private let checker = NSSpellChecker.shared
+    private let settings = SettingsManager.shared
     private var cache: [String: Bool] = [:]
     private var cacheOrder: [String] = []
     private let cacheLimit = 500
-    private let maxWordLength = 40
 
     /// Check if a word is valid in the given language.
     /// - Parameters:
@@ -64,7 +64,7 @@ final class SpellCheckService {
         }
 
         // Skip very long tokens (likely IDs or pasted content)
-        if word.count > maxWordLength {
+        if word.count > settings.maxWordLength {
             return nil
         }
 
@@ -75,7 +75,7 @@ final class SpellCheckService {
         }
 
         // Skip URLs, emails, and file paths
-        if isLikelyURLOrPath(word) || isLikelyEmail(word) {
+        if settings.skipURLsAndEmail && (isLikelyURLOrPath(word) || isLikelyEmail(word)) {
             return nil
         }
 
