@@ -7,6 +7,7 @@ final class SpellCheckService {
     private var cache: [String: Bool] = [:]
     private var cacheOrder: [String] = []
     private let cacheLimit = 500
+    private let maxWordLength = 40
 
     /// Check if a word is valid in the given language.
     /// - Parameters:
@@ -62,9 +63,19 @@ final class SpellCheckService {
             return nil
         }
 
+        // Skip very long tokens (likely IDs or pasted content)
+        if word.count > maxWordLength {
+            return nil
+        }
+
         // Single-char words are too ambiguous for auto-conversion (e.g. I↔Ш)
         // Use double-LShift to force-convert these manually
         if word.count < 2 {
+            return nil
+        }
+
+        // Skip URLs, emails, and file paths
+        if isLikelyURLOrPath(word) || isLikelyEmail(word) {
             return nil
         }
 
@@ -91,5 +102,32 @@ final class SpellCheckService {
         }
 
         return nil
+    }
+
+    // MARK: - Heuristics
+
+    private func isLikelyURLOrPath(_ word: String) -> Bool {
+        let lower = word.lowercased()
+        if lower.contains("://") || lower.hasPrefix("www.") {
+            return true
+        }
+        if word.contains("/") || word.contains("\\") {
+            return true
+        }
+        if lower.hasSuffix(".com") || lower.hasSuffix(".net") || lower.hasSuffix(".org") ||
+           lower.hasSuffix(".ru") || lower.hasSuffix(".io") || lower.hasSuffix(".dev") {
+            return true
+        }
+        return false
+    }
+
+    private func isLikelyEmail(_ word: String) -> Bool {
+        guard let atIndex = word.firstIndex(of: "@") else { return false }
+        let local = word[..<atIndex]
+        let domain = word[word.index(after: atIndex)...]
+        if local.isEmpty || domain.isEmpty {
+            return false
+        }
+        return domain.contains(".")
     }
 }
