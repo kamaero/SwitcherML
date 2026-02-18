@@ -66,6 +66,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
             // Store for backspace-rejection tracking
             self.keyboardMonitor.lastConversion = (original: original, replacement: replacement)
+            self.keyboardMonitor.lastConversionTime = ProcessInfo.processInfo.systemUptime
 
             // Switch keyboard layout to match the target language
             InputSourceSwitcher.switchToMatch(convertedText: replacement)

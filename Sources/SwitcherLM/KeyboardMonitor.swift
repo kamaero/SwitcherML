@@ -31,6 +31,10 @@ final class KeyboardMonitor {
     // -- Backspace rejection tracking --
     /// The last conversion that happened: (original, replacement)
     var lastConversion: (original: String, replacement: String)?
+    /// When the last conversion occurred (system uptime)
+    var lastConversionTime: TimeInterval = 0
+    /// Time window (seconds) to consider a rejection valid
+    private let rejectionWindow: TimeInterval = 5.0
     /// How many backspaces have been pressed since last conversion
     private var backspaceCountSinceConversion: Int = 0
     /// True if user is currently deleting the converted word
@@ -108,6 +112,7 @@ final class KeyboardMonitor {
 
     func clearLastConversion() {
         lastConversion = nil
+        lastConversionTime = 0
         backspaceCountSinceConversion = 0
         isDeletingConversion = false
     }
@@ -209,10 +214,19 @@ final class KeyboardMonitor {
         currentWord = ""
         lastTypedWord = word
 
+        if lastConversionTime > 0 {
+            let now = ProcessInfo.processInfo.systemUptime
+            if now - lastConversionTime > rejectionWindow {
+                clearLastConversion()
+            }
+        }
+
         // Check if this is the user retyping a word they rejected
-        if let conv = lastConversion, word.lowercased() == conv.original.lowercased() {
+        if let conv = lastConversion,
+           isDeletingConversion,
+           word.lowercased() == conv.original.lowercased() {
             onConversionRejected?(conv.original)
-            lastConversion = nil
+            clearLastConversion()
             return false
         }
 
@@ -226,6 +240,13 @@ final class KeyboardMonitor {
     // MARK: - Backspace tracking
 
     private func handleBackspace() {
+        if lastConversionTime > 0 {
+            let now = ProcessInfo.processInfo.systemUptime
+            if now - lastConversionTime > rejectionWindow {
+                clearLastConversion()
+            }
+        }
+
         if !currentWord.isEmpty {
             currentWord.removeLast()
             return
