@@ -17,6 +17,12 @@ final class KeyboardMonitor {
     /// Called on double-LShift to force-convert last word or selection.
     var onForceConvert: (() -> Void)?
 
+    /// Called to undo the last replacement.
+    var onUndoLastReplacement: (() -> Void)?
+
+    /// Called to skip auto-conversion for the next word.
+    var onSkipNextWord: (() -> Void)?
+
     /// Called when user backspaces away a recently converted word and retypes original.
     var onConversionRejected: ((String) -> Void)?
 
@@ -34,6 +40,10 @@ final class KeyboardMonitor {
     var lastConversion: (original: String, replacement: String)?
     /// When the last conversion occurred (system uptime)
     var lastConversionTime: TimeInterval = 0
+    /// Track the last replacement (for undo)
+    var lastReplacement: (original: String, replacement: String, boundary: String, time: TimeInterval)?
+    /// True if user typed after the last replacement
+    var hasTypedSinceReplacement: Bool = false
     /// Time window (seconds) to consider a rejection valid
     private let rejectionWindow: TimeInterval = 5.0
     /// How many backspaces have been pressed since last conversion
@@ -118,6 +128,21 @@ final class KeyboardMonitor {
         isDeletingConversion = false
     }
 
+    func recordReplacement(original: String, replacement: String, boundary: String) {
+        lastReplacement = (
+            original: original,
+            replacement: replacement,
+            boundary: boundary,
+            time: ProcessInfo.processInfo.systemUptime
+        )
+        hasTypedSinceReplacement = false
+    }
+
+    func clearLastReplacement() {
+        lastReplacement = nil
+        hasTypedSinceReplacement = false
+    }
+
     // MARK: - Event handling
 
     fileprivate func handleFlagsChanged(_ event: CGEvent) {
@@ -167,6 +192,16 @@ final class KeyboardMonitor {
             return event
         }
 
+        if keyCode == Int64(kVK_LeftArrow) {
+            onUndoLastReplacement?()
+            return event
+        }
+
+        if keyCode == Int64(kVK_RightArrow) {
+            onSkipNextWord?()
+            return event
+        }
+
         // Any non-backspace key resets the deletion tracking
         if isDeletingConversion {
             isDeletingConversion = false
@@ -194,6 +229,9 @@ final class KeyboardMonitor {
             for ch in str {
                 if ch.isLetter || ch.isNumber || LayoutConverter.isConvertibleLetterKey(ch) {
                     currentWord.append(ch)
+                    if lastReplacement != nil {
+                        hasTypedSinceReplacement = true
+                    }
                 } else if isJoiner(ch), !currentWord.isEmpty {
                     currentWord.append(ch)
                 } else {

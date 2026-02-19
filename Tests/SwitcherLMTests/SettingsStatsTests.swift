@@ -7,6 +7,7 @@ final class SettingsStatsTests: XCTestCase {
         super.setUp()
         UserDefaults.standard.removeObject(forKey: "SwitcherLM_AutoConvertEnabled")
         UserDefaults.standard.removeObject(forKey: "SwitcherLM_DoubleShiftEnabled")
+        UserDefaults.standard.removeObject(forKey: "SwitcherLM_SingleLetterAutoConvert")
         UserDefaults.standard.removeObject(forKey: "SwitcherLM_RejectionThreshold")
         UserDefaults.standard.removeObject(forKey: "SwitcherLM_MaxWordLength")
         UserDefaults.standard.removeObject(forKey: "SwitcherLM_SkipURLsAndEmail")
@@ -19,6 +20,7 @@ final class SettingsStatsTests: XCTestCase {
         let settings = SettingsManager.shared
         XCTAssertTrue(settings.autoConvertEnabled)
         XCTAssertTrue(settings.doubleShiftEnabled)
+        XCTAssertTrue(settings.singleLetterAutoConvert)
         XCTAssertEqual(settings.rejectionThreshold, 3)
         XCTAssertEqual(settings.maxWordLength, 40)
         XCTAssertTrue(settings.skipURLsAndEmail)

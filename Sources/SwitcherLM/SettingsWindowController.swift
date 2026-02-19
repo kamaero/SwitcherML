@@ -29,12 +29,12 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         }
 
         let w = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 420, height: 320),
+            contentRect: NSRect(x: 0, y: 0, width: 440, height: 420),
             styleMask: [.titled, .closable],
             backing: .buffered,
             defer: false
         )
-        w.title = "SwitcherLM — Settings"
+        w.title = "SwitcherLM — Настройки"
         w.center()
         w.delegate = self
         w.isReleasedWhenClosed = false
@@ -48,23 +48,23 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         stack.spacing = 10
         stack.translatesAutoresizingMaskIntoConstraints = false
 
-        let auto = checkbox(title: "Auto-convert on word boundary", action: #selector(toggleAutoConvert))
+        let auto = checkbox(title: "Автоконвертация на границе слова", action: #selector(toggleAutoConvert))
         autoConvertCheckbox = auto
         stack.addArrangedSubview(auto)
 
-        let doubleShift = checkbox(title: "Enable double-Shift force convert", action: #selector(toggleDoubleShift))
+        let doubleShift = checkbox(title: "Double-Shift: конвертировать выделение", action: #selector(toggleDoubleShift))
         doubleShiftCheckbox = doubleShift
         stack.addArrangedSubview(doubleShift)
 
-        let singleLetter = checkbox(title: "Smart single-letter auto-convert", action: #selector(toggleSingleLetter))
+        let singleLetter = checkbox(title: "Умная однобуквенная конвертация", action: #selector(toggleSingleLetter))
         singleLetterCheckbox = singleLetter
         stack.addArrangedSubview(singleLetter)
 
-        let skipURLs = checkbox(title: "Skip URLs, emails, and file paths", action: #selector(toggleSkipURLs))
+        let skipURLs = checkbox(title: "Пропускать URL, email и пути", action: #selector(toggleSkipURLs))
         skipURLsCheckbox = skipURLs
         stack.addArrangedSubview(skipURLs)
 
-        stack.addArrangedSubview(label(text: "Rejection threshold (auto-add to exceptions):"))
+        stack.addArrangedSubview(label(text: "Порог отклонений (авто-исключения):"))
         let rejectionRow = stepperRow(
             min: 1,
             max: 10,
@@ -74,7 +74,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         rejectionStepper = rejectionRow.stepper
         stack.addArrangedSubview(rejectionRow.view)
 
-        stack.addArrangedSubview(label(text: "Max word length for auto-convert:"))
+        stack.addArrangedSubview(label(text: "Максимальная длина слова:"))
         let maxWordRow = stepperRow(
             min: 5,
             max: 80,
@@ -84,22 +84,48 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         maxWordStepper = maxWordRow.stepper
         stack.addArrangedSubview(maxWordRow.view)
 
-        stack.addArrangedSubview(label(text: "English input source:"))
+        stack.addArrangedSubview(label(text: "Английская раскладка:"))
         let englishRow = popupRow(action: #selector(changeEnglishSource))
         englishPopup = englishRow
         stack.addArrangedSubview(englishRow)
 
-        stack.addArrangedSubview(label(text: "Russian input source:"))
+        stack.addArrangedSubview(label(text: "Русская раскладка:"))
         let russianRow = popupRow(action: #selector(changeRussianSource))
         russianPopup = russianRow
         stack.addArrangedSubview(russianRow)
 
-        contentView.addSubview(stack)
+        let helpButton = NSButton(title: "Справка", target: self, action: #selector(showHelp))
+        helpButton.bezelStyle = .rounded
+        stack.addArrangedSubview(helpButton)
+
+        let documentView = NSView()
+        documentView.translatesAutoresizingMaskIntoConstraints = false
+        documentView.addSubview(stack)
+
+        let scrollView = NSScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.hasVerticalScroller = true
+        scrollView.documentView = documentView
+        scrollView.drawsBackground = false
+
+        contentView.addSubview(scrollView)
 
         NSLayoutConstraint.activate([
-            stack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            stack.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -20),
-            stack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
+            scrollView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            scrollView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            scrollView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            scrollView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
+
+            documentView.leadingAnchor.constraint(equalTo: scrollView.contentView.leadingAnchor),
+            documentView.trailingAnchor.constraint(equalTo: scrollView.contentView.trailingAnchor),
+            documentView.topAnchor.constraint(equalTo: scrollView.contentView.topAnchor),
+            documentView.bottomAnchor.constraint(equalTo: scrollView.contentView.bottomAnchor),
+            documentView.widthAnchor.constraint(equalTo: scrollView.contentView.widthAnchor),
+
+            stack.leadingAnchor.constraint(equalTo: documentView.leadingAnchor, constant: 8),
+            stack.trailingAnchor.constraint(equalTo: documentView.trailingAnchor, constant: -8),
+            stack.topAnchor.constraint(equalTo: documentView.topAnchor, constant: 8),
+            stack.bottomAnchor.constraint(lessThanOrEqualTo: documentView.bottomAnchor, constant: -8),
         ])
 
         w.contentView = contentView
@@ -191,10 +217,10 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         english?.removeAllItems()
         russian?.removeAllItems()
 
-        english?.addItem(withTitle: "System default")
+        english?.addItem(withTitle: "Системная")
         english?.lastItem?.representedObject = nil
 
-        russian?.addItem(withTitle: "System default")
+        russian?.addItem(withTitle: "Системная")
         russian?.lastItem?.representedObject = nil
 
         for source in inputSources {
@@ -258,6 +284,21 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
     @objc private func changeRussianSource() {
         guard let item = russianPopup?.selectedItem else { return }
         settings.preferredRussianSourceID = item.representedObject as? String
+    }
+
+    @objc private func showHelp() {
+        let alert = NSAlert()
+        alert.messageText = "Как пользоваться SwitcherLM"
+        alert.informativeText =
+        """
+        • Автоконвертация срабатывает на границе слова (пробел, таб, пунктуация).
+        • Double-Shift конвертирует только выделенный текст.
+        • Стрелка ← отменяет последнюю замену (в течение 5 секунд).
+        • Стрелка → отключает автоконвертацию для следующего слова.
+        • Список исключений — через меню «Exceptions…».
+        """
+        alert.addButton(withTitle: "ОК")
+        alert.runModal()
     }
 
     func windowWillClose(_ notification: Notification) {

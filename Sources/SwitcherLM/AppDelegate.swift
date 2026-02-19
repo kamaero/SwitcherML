@@ -12,6 +12,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let settings = SettingsManager.shared
     private var exceptionsWindowController: ExceptionsWindowController?
     private var settingsWindowController: SettingsWindowController?
+    private var skipNextWord: Bool = false
+
+    private let undoWindow: TimeInterval = 5.0
 
     /// Tracks whether we're currently performing a replacement (to ignore our own events).
     private var isReplacing = false
@@ -52,6 +55,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 return nil
             }
 
+            if self.skipNextWord {
+                self.skipNextWord = false
+                return nil
+            }
+
             if self.exceptionsManager.contains(word) {
                 return nil
             }
@@ -77,6 +85,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             // Store for backspace-rejection tracking
             self.keyboardMonitor.lastConversion = (original: original, replacement: replacement)
             self.keyboardMonitor.lastConversionTime = ProcessInfo.processInfo.systemUptime
+            self.keyboardMonitor.recordReplacement(original: original, replacement: replacement, boundary: boundary)
 
             // Switch keyboard layout to match the target language
             InputSourceSwitcher.switchToMatch(convertedText: replacement)
@@ -106,6 +115,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self?.handleForceConvert()
         }
 
+        keyboardMonitor.onUndoLastReplacement = { [weak self] in
+            self?.handleUndoReplacement()
+        }
+
+        keyboardMonitor.onSkipNextWord = { [weak self] in
+            self?.skipNextWord = true
+        }
+
         keyboardMonitor.isEnabled = true
     }
 
@@ -121,23 +138,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             forceConvertSelection(selectedText)
             return
         }
-
-        // No selection — convert current in-progress word, or last completed word
-        let lastWord = keyboardMonitor.takeCurrentWord() ?? keyboardMonitor.lastTypedWord
-        guard !lastWord.isEmpty else { return }
-
-        let converted = LayoutConverter.convertPreservingCase(lastWord)
-        guard converted != lastWord else { return }
-
-        isReplacing = true
-        textReplacer.replace(characterCount: lastWord.count, with: converted)
-        InputSourceSwitcher.switchToMatch(convertedText: converted)
-        statusBarController.incrementStats()
-        print("Force-converted: \"\(lastWord)\" → \"\(converted)\"")
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
-            self?.isReplacing = false
-        }
+        // No selection — do nothing (double-shift reserved for selection)
+        return
     }
 
     private func forceConvertSelection(_ text: String) {
@@ -187,6 +189,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         return selectedText
+    }
+
+    // MARK: - Undo last replacement
+
+    private func handleUndoReplacement() {
+        guard let last = keyboardMonitor.lastReplacement else { return }
+        if keyboardMonitor.hasTypedSinceReplacement { return }
+
+        let now = ProcessInfo.processInfo.systemUptime
+        if now - last.time > undoWindow { return }
+
+        isReplacing = true
+        textReplacer.replace(
+            characterCount: last.replacement.count + last.boundary.count,
+            with: last.original + last.boundary
+        )
+        keyboardMonitor.clearLastReplacement()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+            self?.isReplacing = false
+        }
     }
 
     // MARK: - Exceptions window
