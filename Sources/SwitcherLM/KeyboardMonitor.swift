@@ -54,6 +54,11 @@ final class KeyboardMonitor {
     // -- Last completed word (for force-convert) --
     private(set) var lastTypedWord: String = ""
 
+    // -- Context for single-letter conversion --
+    private var lastEventWasBoundary: Bool = true
+    private var wordStartWasBoundary: Bool = true
+    private var isEditingExistingText: Bool = false
+
     var isEnabled: Bool = false {
         didSet {
             if isEnabled {
@@ -194,11 +199,21 @@ final class KeyboardMonitor {
 
         if keyCode == Int64(kVK_LeftArrow) {
             onUndoLastReplacement?()
+            isEditingExistingText = true
+            lastEventWasBoundary = false
             return event
         }
 
         if keyCode == Int64(kVK_RightArrow) {
             onSkipNextWord?()
+            isEditingExistingText = true
+            lastEventWasBoundary = false
+            return event
+        }
+
+        if keyCode == Int64(kVK_UpArrow) || keyCode == Int64(kVK_DownArrow) {
+            isEditingExistingText = true
+            lastEventWasBoundary = false
             return event
         }
 
@@ -211,6 +226,7 @@ final class KeyboardMonitor {
         if isWordBoundaryKeyCode(keyCode: keyCode) {
             let boundary = boundaryString(for: keyCode)
             let converted = processCurrentWord(boundary: boundary)
+            lastEventWasBoundary = true
             // If conversion happened, suppress this event — boundary is included in paste
             return converted ? nil : event
         }
@@ -228,14 +244,20 @@ final class KeyboardMonitor {
             let str = String(utf16CodeUnits: chars, count: length)
             for ch in str {
                 if ch.isLetter || ch.isNumber || LayoutConverter.isConvertibleLetterKey(ch) {
+                    if currentWord.isEmpty {
+                        wordStartWasBoundary = lastEventWasBoundary && !isEditingExistingText
+                        isEditingExistingText = false
+                    }
                     currentWord.append(ch)
                     if lastReplacement != nil {
                         hasTypedSinceReplacement = true
                     }
+                    lastEventWasBoundary = false
                 } else if isJoiner(ch), !currentWord.isEmpty {
                     currentWord.append(ch)
                 } else {
                     // Punctuation/symbol acts as word boundary
+                    lastEventWasBoundary = true
                     let converted = processCurrentWord(boundary: String(ch))
                     if converted {
                         return nil // suppress — boundary included in paste
@@ -256,6 +278,10 @@ final class KeyboardMonitor {
         let word = currentWord
         currentWord = ""
         lastTypedWord = word
+
+        if word.count == 1 && !wordStartWasBoundary {
+            return false
+        }
 
         if lastConversionTime > 0 {
             let now = ProcessInfo.processInfo.systemUptime
@@ -283,6 +309,10 @@ final class KeyboardMonitor {
     // MARK: - Backspace tracking
 
     private func handleBackspace() {
+        if currentWord.isEmpty {
+            isEditingExistingText = true
+        }
+
         if lastConversionTime > 0 {
             let now = ProcessInfo.processInfo.systemUptime
             if now - lastConversionTime > rejectionWindow {
