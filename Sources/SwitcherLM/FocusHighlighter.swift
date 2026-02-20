@@ -32,7 +32,10 @@ final class FocusHighlighter {
         guard let focused = focusedElement(),
               let role = attributeString(focused, kAXRoleAttribute as CFString),
               isTextRole(role),
-              let frame = attributeFrame(focused) else {
+              isEditableTextElement(focused),
+              let rawFrame = attributeFrame(focused),
+              let frame = normalizedFrame(rawFrame: rawFrame),
+              isReasonableFrame(frame) else {
             hideOverlay()
             return
         }
@@ -57,6 +60,13 @@ final class FocusHighlighter {
         let result = AXUIElementCopyAttributeValue(element, attr, &value)
         guard result == .success else { return nil }
         return value as? String
+    }
+
+    private func attributeBool(_ element: AXUIElement, _ attr: CFString) -> Bool? {
+        var value: AnyObject?
+        let result = AXUIElementCopyAttributeValue(element, attr, &value)
+        guard result == .success else { return nil }
+        return value as? Bool
     }
 
     private func attributeFrame(_ element: AXUIElement) -> CGRect? {
@@ -113,6 +123,61 @@ final class FocusHighlighter {
         role == (kAXTextFieldRole as String) ||
         role == (kAXTextAreaRole as String) ||
         role == "AXSearchField"
+    }
+
+    private func isEditableTextElement(_ element: AXUIElement) -> Bool {
+        let focused = attributeBool(element, kAXFocusedAttribute as CFString) ?? false
+        if !focused { return false }
+        let enabled = attributeBool(element, kAXEnabledAttribute as CFString) ?? true
+        if !enabled { return false }
+        let editable = attributeBool(element, kAXEditableAttribute as CFString) ?? false
+        return editable
+    }
+
+    private func normalizedFrame(rawFrame: CGRect) -> CGRect? {
+        if let windowFrame = focusedWindowFrame() {
+            // Some apps report local coords relative to window origin.
+            if rawFrame.maxX <= windowFrame.width + 20, rawFrame.maxY <= windowFrame.height + 20 {
+                let asLocal = CGRect(
+                    x: windowFrame.origin.x + rawFrame.origin.x,
+                    y: windowFrame.origin.y + rawFrame.origin.y,
+                    width: rawFrame.width,
+                    height: rawFrame.height
+                )
+                return asLocal
+            }
+            return rawFrame
+        }
+        return rawFrame
+    }
+
+    private func focusedWindowFrame() -> CGRect? {
+        let system = AXUIElementCreateSystemWide()
+        var appValue: AnyObject?
+        let appResult = AXUIElementCopyAttributeValue(system, kAXFocusedApplicationAttribute as CFString, &appValue)
+        guard appResult == .success, let appValue else { return nil }
+        if CFGetTypeID(appValue) != AXUIElementGetTypeID() { return nil }
+        let app = appValue as! AXUIElement
+
+        var windowValue: AnyObject?
+        let windowResult = AXUIElementCopyAttributeValue(app, kAXFocusedWindowAttribute as CFString, &windowValue)
+        guard windowResult == .success, let windowValue else { return nil }
+        if CFGetTypeID(windowValue) != AXUIElementGetTypeID() { return nil }
+        let window = windowValue as! AXUIElement
+
+        guard let pos = attributePoint(window, kAXPositionAttribute as CFString),
+              let size = attributeSize(window, kAXSizeAttribute as CFString) else {
+            return nil
+        }
+        return CGRect(origin: pos, size: size)
+    }
+
+    private func isReasonableFrame(_ frame: CGRect) -> Bool {
+        guard frame.width >= 40, frame.height >= 18 else { return false }
+        guard let screen = NSScreen.main else { return true }
+        let maxWidth = screen.frame.width * 0.95
+        let maxHeight = screen.frame.height * 0.6
+        return frame.width <= maxWidth && frame.height <= maxHeight
     }
 
     private func showOverlay(frame: CGRect, role: String) {
