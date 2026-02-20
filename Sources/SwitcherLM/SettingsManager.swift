@@ -1,6 +1,6 @@
 import Foundation
 
-final class SettingsManager {
+final class SettingsManager: @unchecked Sendable {
     static let shared = SettingsManager()
 
     static let didChangeNotification = Notification.Name("SwitcherLM.SettingsChanged")

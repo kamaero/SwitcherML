@@ -21,8 +21,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var isReplacing = false
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        let promptKey = "AXTrustedCheckOptionPrompt" as CFString
         let trusted = AXIsProcessTrustedWithOptions(
-            [kAXTrustedCheckOptionPrompt.takeRetainedValue(): true] as CFDictionary
+            [promptKey: true] as CFDictionary
         )
 
         if !trusted {

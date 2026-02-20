@@ -1,6 +1,6 @@
 import Foundation
 
-final class StatsManager {
+final class StatsManager: @unchecked Sendable {
     static let shared = StatsManager()
 
     private let defaults = UserDefaults.standard
