@@ -10,9 +10,6 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
     private var doubleShiftCheckbox: NSButton?
     private var singleLetterCheckbox: NSButton?
     private var skipURLsCheckbox: NSButton?
-    private var highlightCheckbox: NSButton?
-    private var englishColorWell: NSColorWell?
-    private var russianColorWell: NSColorWell?
 
     private var rejectionField: NSTextField?
     private var rejectionStepper: NSStepper?
@@ -66,20 +63,6 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         let skipURLs = checkbox(title: "Пропускать URL, email и пути", action: #selector(toggleSkipURLs))
         skipURLsCheckbox = skipURLs
         stack.addArrangedSubview(skipURLs)
-
-        let highlight = checkbox(title: "Подсветка активного поля", action: #selector(toggleHighlight))
-        highlightCheckbox = highlight
-        stack.addArrangedSubview(highlight)
-
-        stack.addArrangedSubview(label(text: "Цвет для английской:"))
-        let englishColor = colorRow(action: #selector(changeEnglishColor))
-        englishColorWell = englishColor
-        stack.addArrangedSubview(englishColor)
-
-        stack.addArrangedSubview(label(text: "Цвет для русской:"))
-        let russianColor = colorRow(action: #selector(changeRussianColor))
-        russianColorWell = russianColor
-        stack.addArrangedSubview(russianColor)
 
         stack.addArrangedSubview(label(text: "Порог отклонений (авто-исключения):"))
         let rejectionRow = stepperRow(
@@ -210,30 +193,17 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         return popup
     }
 
-    private func colorRow(action: Selector) -> NSColorWell {
-        let well = NSColorWell()
-        well.target = self
-        well.action = action
-        well.translatesAutoresizingMaskIntoConstraints = false
-        well.widthAnchor.constraint(equalToConstant: 120).isActive = true
-        return well
-    }
-
     private func syncFromSettings() {
         autoConvertCheckbox?.state = settings.autoConvertEnabled ? .on : .off
         doubleShiftCheckbox?.state = settings.doubleShiftEnabled ? .on : .off
         singleLetterCheckbox?.state = settings.singleLetterAutoConvert ? .on : .off
         skipURLsCheckbox?.state = settings.skipURLsAndEmail ? .on : .off
-        highlightCheckbox?.state = settings.highlightEnabled ? .on : .off
 
         rejectionStepper?.integerValue = settings.rejectionThreshold
         rejectionField?.stringValue = "\(settings.rejectionThreshold)"
 
         maxWordStepper?.integerValue = settings.maxWordLength
         maxWordField?.stringValue = "\(settings.maxWordLength)"
-
-        englishColorWell?.color = settings.highlightEnglishColor
-        russianColorWell?.color = settings.highlightRussianColor
 
         reloadInputSources()
     }
@@ -294,10 +264,6 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         settings.skipURLsAndEmail = skipURLsCheckbox?.state == .on
     }
 
-    @objc private func toggleHighlight() {
-        settings.highlightEnabled = highlightCheckbox?.state == .on
-    }
-
     @objc private func changeRejectionThreshold() {
         let value = rejectionStepper?.integerValue ?? settings.rejectionThreshold
         settings.rejectionThreshold = value
@@ -320,18 +286,6 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         settings.preferredRussianSourceID = item.representedObject as? String
     }
 
-    @objc private func changeEnglishColor() {
-        if let color = englishColorWell?.color {
-            settings.highlightEnglishColor = color
-        }
-    }
-
-    @objc private func changeRussianColor() {
-        if let color = russianColorWell?.color {
-            settings.highlightRussianColor = color
-        }
-    }
-
     @objc private func showHelp() {
         let alert = NSAlert()
         alert.messageText = "Как пользоваться SwitcherLM"
@@ -342,7 +296,6 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         • Стрелка ← отменяет последнюю замену (в течение 5 секунд).
         • Стрелка → отключает автоконвертацию для следующего слова.
         • Список исключений — через меню «Exceptions…».
-        • Подсветка показывает активное поле ввода цветом раскладки.
         """
         alert.addButton(withTitle: "ОК")
         alert.runModal()
