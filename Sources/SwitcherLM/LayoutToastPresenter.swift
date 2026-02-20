@@ -2,6 +2,7 @@ import AppKit
 
 final class LayoutToastPresenter {
 
+    private let settings = SettingsManager.shared
     private var windows: [NSWindow] = []
 
     func show(language: InputSourceSwitcher.Language) {
@@ -13,12 +14,13 @@ final class LayoutToastPresenter {
         let size = NSSize(width: 76, height: 34)
         let padding: CGFloat = 18
         let frame = screen.visibleFrame
-        let corners = [
+        let allCorners = [
             NSPoint(x: frame.minX + padding, y: frame.maxY - size.height - padding), // TL
             NSPoint(x: frame.maxX - size.width - padding, y: frame.maxY - size.height - padding), // TR
             NSPoint(x: frame.minX + padding, y: frame.minY + padding), // BL
             NSPoint(x: frame.maxX - size.width - padding, y: frame.minY + padding), // BR
         ]
+        let corners = selectedCorners(from: allCorners, count: settings.toastCornerCount)
 
         for origin in corners {
             let rect = NSRect(origin: origin, size: size)
@@ -44,7 +46,7 @@ final class LayoutToastPresenter {
             }
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.55) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + settings.toastDuration) { [weak self] in
             self?.fadeOutAndHide()
         }
     }
@@ -77,6 +79,17 @@ final class LayoutToastPresenter {
             window.orderOut(nil)
         }
         windows.removeAll()
+    }
+
+    private func selectedCorners(from corners: [NSPoint], count: Int) -> [NSPoint] {
+        switch count {
+        case 1:
+            return [corners[1]] // TR
+        case 2:
+            return [corners[0], corners[1]] // TL + TR
+        default:
+            return corners
+        }
     }
 }
 

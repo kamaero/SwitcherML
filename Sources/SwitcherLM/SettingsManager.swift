@@ -14,6 +14,8 @@ final class SettingsManager {
         static let rejectionThreshold = "SwitcherLM_RejectionThreshold"
         static let maxWordLength = "SwitcherLM_MaxWordLength"
         static let skipURLsAndEmail = "SwitcherLM_SkipURLsAndEmail"
+        static let toastDuration = "SwitcherLM_ToastDuration"
+        static let toastCornerCount = "SwitcherLM_ToastCornerCount"
         static let preferredEnglishSourceID = "SwitcherLM_PreferredEnglishSourceID"
         static let preferredRussianSourceID = "SwitcherLM_PreferredRussianSourceID"
     }
@@ -46,6 +48,30 @@ final class SettingsManager {
     var skipURLsAndEmail: Bool {
         get { defaults.object(forKey: Key.skipURLsAndEmail) as? Bool ?? true }
         set { defaults.set(newValue, forKey: Key.skipURLsAndEmail); notify() }
+    }
+
+    var toastDuration: Double {
+        get {
+            let value = defaults.object(forKey: Key.toastDuration) as? Double ?? 0.55
+            return min(max(value, 0.2), 3.0)
+        }
+        set {
+            defaults.set(min(max(newValue, 0.2), 3.0), forKey: Key.toastDuration)
+            notify()
+        }
+    }
+
+    var toastCornerCount: Int {
+        get {
+            let value = defaults.object(forKey: Key.toastCornerCount) as? Int ?? 4
+            if value == 1 || value == 2 || value == 4 { return value }
+            return 4
+        }
+        set {
+            let normalized = (newValue == 1 || newValue == 2 || newValue == 4) ? newValue : 4
+            defaults.set(normalized, forKey: Key.toastCornerCount)
+            notify()
+        }
     }
 
     var preferredEnglishSourceID: String? {

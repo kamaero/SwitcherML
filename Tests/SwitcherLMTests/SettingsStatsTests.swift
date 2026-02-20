@@ -11,6 +11,8 @@ final class SettingsStatsTests: XCTestCase {
         UserDefaults.standard.removeObject(forKey: "SwitcherLM_RejectionThreshold")
         UserDefaults.standard.removeObject(forKey: "SwitcherLM_MaxWordLength")
         UserDefaults.standard.removeObject(forKey: "SwitcherLM_SkipURLsAndEmail")
+        UserDefaults.standard.removeObject(forKey: "SwitcherLM_ToastDuration")
+        UserDefaults.standard.removeObject(forKey: "SwitcherLM_ToastCornerCount")
         UserDefaults.standard.removeObject(forKey: "SwitcherLM_TotalConverted")
         UserDefaults.standard.removeObject(forKey: "SwitcherLM_TotalRejected")
         UserDefaults.standard.removeObject(forKey: "SwitcherLM_DailyStats")
@@ -24,6 +26,8 @@ final class SettingsStatsTests: XCTestCase {
         XCTAssertEqual(settings.rejectionThreshold, 3)
         XCTAssertEqual(settings.maxWordLength, 40)
         XCTAssertTrue(settings.skipURLsAndEmail)
+        XCTAssertEqual(settings.toastDuration, 0.55, accuracy: 0.001)
+        XCTAssertEqual(settings.toastCornerCount, 4)
     }
 
     func testStatsPersistence() {

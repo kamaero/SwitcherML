@@ -17,6 +17,10 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
     private var maxWordField: NSTextField?
     private var maxWordStepper: NSStepper?
 
+    private var toastDurationField: NSTextField?
+    private var toastDurationStepper: NSStepper?
+    private var toastCornersPopup: NSPopUpButton?
+
     private var englishPopup: NSPopUpButton?
     private var russianPopup: NSPopUpButton?
     private var inputSources: [InputSourceSwitcher.InputSourceInfo] = []
@@ -83,6 +87,22 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         maxWordField = maxWordRow.field
         maxWordStepper = maxWordRow.stepper
         stack.addArrangedSubview(maxWordRow.view)
+
+        stack.addArrangedSubview(label(text: "Длительность toast (сек):"))
+        let toastDurationRow = stepperRow(
+            min: 2,
+            max: 30,
+            action: #selector(changeToastDuration)
+        )
+        toastDurationField = toastDurationRow.field
+        toastDurationStepper = toastDurationRow.stepper
+        stack.addArrangedSubview(toastDurationRow.view)
+
+        stack.addArrangedSubview(label(text: "Количество углов для toast:"))
+        let cornersRow = popupRow(action: #selector(changeToastCorners))
+        toastCornersPopup = cornersRow
+        cornersRow.addItems(withTitles: ["1", "2", "4"])
+        stack.addArrangedSubview(cornersRow)
 
         stack.addArrangedSubview(label(text: "Английская раскладка:"))
         let englishRow = popupRow(action: #selector(changeEnglishSource))
@@ -205,7 +225,24 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         maxWordStepper?.integerValue = settings.maxWordLength
         maxWordField?.stringValue = "\(settings.maxWordLength)"
 
+        let durationTenths = Int(round(settings.toastDuration * 10))
+        toastDurationStepper?.integerValue = durationTenths
+        toastDurationField?.stringValue = String(format: "%.1f", settings.toastDuration)
+
+        selectToastCornerCount(settings.toastCornerCount)
+
         reloadInputSources()
+    }
+
+    private func selectToastCornerCount(_ value: Int) {
+        let title = "\(value)"
+        for item in toastCornersPopup?.itemArray ?? [] {
+            if item.title == title {
+                toastCornersPopup?.select(item)
+                return
+            }
+        }
+        toastCornersPopup?.selectItem(withTitle: "4")
     }
 
     private func reloadInputSources() {
@@ -274,6 +311,20 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         let value = maxWordStepper?.integerValue ?? settings.maxWordLength
         settings.maxWordLength = value
         maxWordField?.stringValue = "\(settings.maxWordLength)"
+    }
+
+    @objc private func changeToastDuration() {
+        let tenths = toastDurationStepper?.integerValue ?? Int(round(settings.toastDuration * 10))
+        let clamped = min(max(tenths, 2), 30)
+        let seconds = Double(clamped) / 10.0
+        settings.toastDuration = seconds
+        toastDurationField?.stringValue = String(format: "%.1f", settings.toastDuration)
+    }
+
+    @objc private func changeToastCorners() {
+        let value = Int(toastCornersPopup?.selectedItem?.title ?? "") ?? 4
+        settings.toastCornerCount = value
+        selectToastCornerCount(settings.toastCornerCount)
     }
 
     @objc private func changeEnglishSource() {
