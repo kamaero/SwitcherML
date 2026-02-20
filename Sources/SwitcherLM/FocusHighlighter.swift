@@ -37,8 +37,7 @@ final class FocusHighlighter {
             return
         }
 
-        let normalized = normalizeFrame(frame)
-        showOverlay(frame: normalized, role: role)
+        showOverlay(frame: frame.integral, role: role)
     }
 
     private func focusedElement() -> AXUIElement? {
@@ -166,88 +165,47 @@ final class FocusHighlighter {
             return settings.highlightEnglishColor
         }
     }
-
-    private func normalizeFrame(_ frame: CGRect) -> CGRect {
-        // Heuristic: choose the frame (direct vs flipped) that best fits visible screens.
-        let direct = frame
-        let flipped = flip(frame)
-        let directScore = bestIntersectionArea(for: direct)
-        let flippedScore = bestIntersectionArea(for: flipped)
-        return flippedScore > directScore ? flipped : direct
-    }
-
-    private func flip(_ frame: CGRect) -> CGRect {
-        guard let screen = screenForBestIntersection(with: frame) ?? NSScreen.main else {
-            return frame
-        }
-        let screenFrame = screen.frame
-        let flippedY = screenFrame.maxY - frame.origin.y - frame.size.height
-        return CGRect(x: frame.origin.x, y: flippedY, width: frame.size.width, height: frame.size.height)
-    }
-
-    private func bestIntersectionArea(for frame: CGRect) -> CGFloat {
-        var best: CGFloat = 0
-        for screen in NSScreen.screens {
-            let intersection = frame.intersection(screen.frame)
-            if intersection.isNull { continue }
-            let area = intersection.width * intersection.height
-            if area > best { best = area }
-        }
-        return best
-    }
-
-    private func screenForBestIntersection(with frame: CGRect) -> NSScreen? {
-        var bestScreen: NSScreen?
-        var best: CGFloat = 0
-        for screen in NSScreen.screens {
-            let intersection = frame.intersection(screen.frame)
-            if intersection.isNull { continue }
-            let area = intersection.width * intersection.height
-            if area > best {
-                best = area
-                bestScreen = screen
-            }
-        }
-        return bestScreen
-    }
 }
 
 private final class HighlightView: NSView {
-
-    private let shapeLayer = CAShapeLayer()
+    private var strokeColor: NSColor = .systemBlue
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         wantsLayer = true
         layer?.backgroundColor = NSColor.clear.cgColor
-        layer?.addSublayer(shapeLayer)
-        shapeLayer.fillColor = NSColor.clear.cgColor
-        shapeLayer.lineWidth = 2.5
-        shapeLayer.shadowOpacity = 0.65
-        shapeLayer.shadowRadius = 4.0
-        shapeLayer.shadowOffset = .zero
-        updatePath()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func layout() {
-        super.layout()
-        updatePath()
+    override var isOpaque: Bool {
+        false
     }
 
     func update(color: NSColor) {
-        shapeLayer.strokeColor = color.withAlphaComponent(0.8).cgColor
-        shapeLayer.shadowColor = color.cgColor
+        strokeColor = color
+        needsDisplay = true
     }
 
-    private func updatePath() {
-        let inset = bounds.insetBy(dx: 2, dy: 2)
-        let path = CGPath(roundedRect: inset, cornerWidth: 4, cornerHeight: 4, transform: nil)
-        shapeLayer.path = path
-        shapeLayer.shadowPath = path
-        shapeLayer.frame = bounds
+    override func draw(_ dirtyRect: NSRect) {
+        super.draw(dirtyRect)
+        NSColor.clear.setFill()
+        dirtyRect.fill()
+
+        let rect = bounds.insetBy(dx: 1.5, dy: 1.5)
+        let path = NSBezierPath(roundedRect: rect, xRadius: 4, yRadius: 4)
+        path.lineWidth = 2.0
+
+        NSGraphicsContext.saveGraphicsState()
+        let shadow = NSShadow()
+        shadow.shadowColor = strokeColor.withAlphaComponent(0.55)
+        shadow.shadowBlurRadius = 3
+        shadow.shadowOffset = .zero
+        shadow.set()
+        strokeColor.withAlphaComponent(0.9).setStroke()
+        path.stroke()
+        NSGraphicsContext.restoreGraphicsState()
     }
 }
