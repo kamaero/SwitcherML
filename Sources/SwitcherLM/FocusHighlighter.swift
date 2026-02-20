@@ -133,14 +133,14 @@ final class FocusHighlighter {
             window.ignoresMouseEvents = true
             window.collectionBehavior = [.canJoinAllSpaces, .transient]
 
-            let view = HighlightView(frame: snapped)
+            let view = HighlightView(frame: NSRect(origin: .zero, size: snapped.size))
             window.contentView = view
             overlayWindow = window
         }
 
         if snapped != lastFrame || role != lastRole {
             overlayWindow?.setFrame(snapped, display: true)
-            (overlayWindow?.contentView as? HighlightView)?.frame = snapped
+            (overlayWindow?.contentView as? HighlightView)?.frame = NSRect(origin: .zero, size: snapped.size)
             lastFrame = snapped
             lastRole = role
         }
@@ -219,7 +219,7 @@ private final class HighlightView: NSView {
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         wantsLayer = true
-        layer?.masksToBounds = true
+        layer?.backgroundColor = NSColor.clear.cgColor
         layer?.addSublayer(shapeLayer)
         shapeLayer.fillColor = NSColor.clear.cgColor
         shapeLayer.lineWidth = 2.5
