@@ -37,7 +37,8 @@ final class FocusHighlighter {
             return
         }
 
-        showOverlay(frame: frame, role: role)
+        let appFrame = appKitFrame(fromAXFrame: frame)
+        showOverlay(frame: appFrame, role: role)
     }
 
     private func focusedElement() -> AXUIElement? {
@@ -148,6 +149,24 @@ final class FocusHighlighter {
         case .unknown:
             return settings.highlightEnglishColor
         }
+    }
+
+    private func appKitFrame(fromAXFrame frame: CGRect) -> CGRect {
+        guard let screen = screenContaining(point: frame.origin) ?? NSScreen.main else {
+            return frame
+        }
+        let screenFrame = screen.frame
+        let flippedY = screenFrame.maxY - frame.origin.y - frame.size.height
+        return CGRect(x: frame.origin.x, y: flippedY, width: frame.size.width, height: frame.size.height)
+    }
+
+    private func screenContaining(point: CGPoint) -> NSScreen? {
+        for screen in NSScreen.screens {
+            if screen.frame.contains(point) {
+                return screen
+            }
+        }
+        return nil
     }
 }
 
