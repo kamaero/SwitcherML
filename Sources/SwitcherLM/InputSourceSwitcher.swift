@@ -49,6 +49,12 @@ struct InputSourceSwitcher {
         }
     }
 
+    enum Language {
+        case english
+        case russian
+        case unknown
+    }
+
     /// Get current input source ID.
     static func currentSourceID() -> String? {
         guard let source = TISCopyCurrentKeyboardInputSource()?.takeRetainedValue() else {
@@ -58,6 +64,17 @@ struct InputSourceSwitcher {
             return nil
         }
         return Unmanaged<CFString>.fromOpaque(idPtr).takeUnretainedValue() as String
+    }
+
+    static func currentLanguage() -> Language {
+        guard let id = currentSourceID() else { return .unknown }
+        if englishAlternatives.contains(id) {
+            return .english
+        }
+        if russianAlternatives.contains(id) {
+            return .russian
+        }
+        return .unknown
     }
 
     /// List available keyboard input sources (id + localized name).

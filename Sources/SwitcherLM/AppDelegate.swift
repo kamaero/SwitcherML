@@ -10,6 +10,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let mlService = MLService()
     private let exceptionsManager = ExceptionsManager()
     private let settings = SettingsManager.shared
+    private let focusHighlighter = FocusHighlighter()
     private var exceptionsWindowController: ExceptionsWindowController?
     private var settingsWindowController: SettingsWindowController?
     private var skipNextWord: Bool = false
@@ -41,6 +42,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusBarController.onShowSettings = { [weak self] in
             self?.showSettingsWindow()
         }
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleSettingsChanged),
+            name: SettingsManager.didChangeNotification,
+            object: nil
+        )
 
         mlService.onAutoException = { [weak self] word in
             self?.exceptionsManager.add(word)
@@ -124,10 +132,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         keyboardMonitor.isEnabled = true
+        focusHighlighter.start()
     }
 
     func applicationWillTerminate(_ notification: Notification) {
         keyboardMonitor.isEnabled = false
+        focusHighlighter.stop()
     }
 
     // MARK: - Force conversion (Double-LShift)
@@ -226,5 +236,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             settingsWindowController = SettingsWindowController()
         }
         settingsWindowController?.showWindow()
+    }
+
+    @objc private func handleSettingsChanged() {
+        if settings.highlightEnabled {
+            focusHighlighter.start()
+        } else {
+            focusHighlighter.stop()
+        }
     }
 }

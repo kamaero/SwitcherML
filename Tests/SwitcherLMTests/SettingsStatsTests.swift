@@ -11,6 +11,9 @@ final class SettingsStatsTests: XCTestCase {
         UserDefaults.standard.removeObject(forKey: "SwitcherLM_RejectionThreshold")
         UserDefaults.standard.removeObject(forKey: "SwitcherLM_MaxWordLength")
         UserDefaults.standard.removeObject(forKey: "SwitcherLM_SkipURLsAndEmail")
+        UserDefaults.standard.removeObject(forKey: "SwitcherLM_HighlightEnabled")
+        UserDefaults.standard.removeObject(forKey: "SwitcherLM_HighlightEnglishColor")
+        UserDefaults.standard.removeObject(forKey: "SwitcherLM_HighlightRussianColor")
         UserDefaults.standard.removeObject(forKey: "SwitcherLM_TotalConverted")
         UserDefaults.standard.removeObject(forKey: "SwitcherLM_TotalRejected")
         UserDefaults.standard.removeObject(forKey: "SwitcherLM_DailyStats")
@@ -24,6 +27,7 @@ final class SettingsStatsTests: XCTestCase {
         XCTAssertEqual(settings.rejectionThreshold, 3)
         XCTAssertEqual(settings.maxWordLength, 40)
         XCTAssertTrue(settings.skipURLsAndEmail)
+        XCTAssertFalse(settings.highlightEnabled)
     }
 
     func testStatsPersistence() {

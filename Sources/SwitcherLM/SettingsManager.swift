@@ -1,4 +1,4 @@
-import Foundation
+import AppKit
 
 final class SettingsManager {
     static let shared = SettingsManager()
@@ -16,6 +16,9 @@ final class SettingsManager {
         static let skipURLsAndEmail = "SwitcherLM_SkipURLsAndEmail"
         static let preferredEnglishSourceID = "SwitcherLM_PreferredEnglishSourceID"
         static let preferredRussianSourceID = "SwitcherLM_PreferredRussianSourceID"
+        static let highlightEnabled = "SwitcherLM_HighlightEnabled"
+        static let highlightEnglishColor = "SwitcherLM_HighlightEnglishColor"
+        static let highlightRussianColor = "SwitcherLM_HighlightRussianColor"
     }
 
     var autoConvertEnabled: Bool {
@@ -48,6 +51,21 @@ final class SettingsManager {
         set { defaults.set(newValue, forKey: Key.skipURLsAndEmail); notify() }
     }
 
+    var highlightEnabled: Bool {
+        get { defaults.object(forKey: Key.highlightEnabled) as? Bool ?? false }
+        set { defaults.set(newValue, forKey: Key.highlightEnabled); notify() }
+    }
+
+    var highlightEnglishColor: NSColor {
+        get { color(forKey: Key.highlightEnglishColor) ?? NSColor.systemRed }
+        set { setColor(newValue, forKey: Key.highlightEnglishColor); notify() }
+    }
+
+    var highlightRussianColor: NSColor {
+        get { color(forKey: Key.highlightRussianColor) ?? NSColor.systemBlue }
+        set { setColor(newValue, forKey: Key.highlightRussianColor); notify() }
+    }
+
     var preferredEnglishSourceID: String? {
         get { defaults.string(forKey: Key.preferredEnglishSourceID) }
         set {
@@ -74,5 +92,16 @@ final class SettingsManager {
 
     private func notify() {
         NotificationCenter.default.post(name: SettingsManager.didChangeNotification, object: nil)
+    }
+
+    private func color(forKey key: String) -> NSColor? {
+        guard let data = defaults.data(forKey: key) else { return nil }
+        return try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSColor.self, from: data)
+    }
+
+    private func setColor(_ color: NSColor, forKey key: String) {
+        if let data = try? NSKeyedArchiver.archivedData(withRootObject: color, requiringSecureCoding: false) {
+            defaults.set(data, forKey: key)
+        }
     }
 }
