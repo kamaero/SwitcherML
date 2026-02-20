@@ -32,7 +32,7 @@ final class FocusHighlighter {
         guard let focused = focusedElement(),
               let role = attributeString(focused, kAXRoleAttribute as CFString),
               isTextRole(role),
-              let frame = attributeFrame(focused, kAXFrameAttribute as CFString) else {
+              let frame = attributeFrame(focused) else {
             hideOverlay()
             return
         }
@@ -59,7 +59,15 @@ final class FocusHighlighter {
         return value as? String
     }
 
-    private func attributeFrame(_ element: AXUIElement, _ attr: CFString) -> CGRect? {
+    private func attributeFrame(_ element: AXUIElement) -> CGRect? {
+        guard let position = attributePoint(element, kAXPositionAttribute as CFString),
+              let size = attributeSize(element, kAXSizeAttribute as CFString) else {
+            return nil
+        }
+        return CGRect(origin: position, size: size)
+    }
+
+    private func attributePoint(_ element: AXUIElement, _ attr: CFString) -> CGPoint? {
         var value: AnyObject?
         let result = AXUIElementCopyAttributeValue(element, attr, &value)
         guard result == .success, let value else { return nil }
@@ -67,9 +75,22 @@ final class FocusHighlighter {
             return nil
         }
         let axValue = (value as! AXValue)
-        var rect = CGRect.zero
-        AXValueGetValue(axValue, .cgRect, &rect)
-        return rect
+        var point = CGPoint.zero
+        AXValueGetValue(axValue, .cgPoint, &point)
+        return point
+    }
+
+    private func attributeSize(_ element: AXUIElement, _ attr: CFString) -> CGSize? {
+        var value: AnyObject?
+        let result = AXUIElementCopyAttributeValue(element, attr, &value)
+        guard result == .success, let value else { return nil }
+        if CFGetTypeID(value) != AXValueGetTypeID() {
+            return nil
+        }
+        let axValue = (value as! AXValue)
+        var size = CGSize.zero
+        AXValueGetValue(axValue, .cgSize, &size)
+        return size
     }
 
     private func isTextRole(_ role: String) -> Bool {
