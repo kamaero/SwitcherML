@@ -9,6 +9,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let textReplacer = TextReplacer()
     private let mlService = MLService()
     private let exceptionsManager = ExceptionsManager()
+    private let layoutToastPresenter = LayoutToastPresenter()
     private let settings = SettingsManager.shared
     private var exceptionsWindowController: ExceptionsWindowController?
     private var settingsWindowController: SettingsWindowController?
@@ -40,6 +41,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         statusBarController.onShowSettings = { [weak self] in
             self?.showSettingsWindow()
+        }
+
+        statusBarController.onLayoutChanged = { [weak self] language in
+            self?.layoutToastPresenter.show(language: language)
         }
 
         mlService.onAutoException = { [weak self] word in

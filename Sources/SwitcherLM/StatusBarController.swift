@@ -13,20 +13,21 @@ final class StatusBarController {
     var onToggleEnabled: ((Bool) -> Void)?
     var onShowExceptions: (() -> Void)?
     var onShowSettings: (() -> Void)?
+    var onLayoutChanged: ((InputSourceSwitcher.Language) -> Void)?
 
     private(set) var isEnabled: Bool = true
     private let statsManager = StatsManager.shared
+    private var layoutTimer: Timer?
+    private var lastLanguage: InputSourceSwitcher.Language = .unknown
 
     func setup() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 
-        if let button = statusItem.button {
-            button.image = NSImage(systemSymbolName: "keyboard", accessibilityDescription: "SwitcherLM")
-            button.image?.size = NSSize(width: 18, height: 18)
-        }
+        updateLayoutBadge(for: .unknown)
 
         buildMenu()
         statusItem.menu = menu
+        startLayoutTracking()
     }
 
     func incrementStats() {
@@ -116,6 +117,71 @@ final class StatusBarController {
         todayStatsMenuItem.title = "Today: \(statsManager.todayConverted) | Rejected: \(statsManager.todayRejected)"
     }
 
+    private func startLayoutTracking() {
+        layoutTimer?.invalidate()
+        layoutTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
+            self?.pollLayout()
+        }
+        layoutTimer?.tolerance = 0.05
+        pollLayout()
+    }
+
+    private func pollLayout() {
+        let language = InputSourceSwitcher.currentLanguage()
+        guard language != lastLanguage else { return }
+        lastLanguage = language
+        updateLayoutBadge(for: language)
+        if language != .unknown {
+            onLayoutChanged?(language)
+        }
+    }
+
+    private func updateLayoutBadge(for language: InputSourceSwitcher.Language) {
+        guard let button = statusItem.button else { return }
+        let badge: (text: String, color: NSColor)
+        switch language {
+        case .english:
+            badge = ("EN", .systemRed)
+        case .russian:
+            badge = ("RU", .systemBlue)
+        case .unknown:
+            badge = ("??", .systemGray)
+        }
+        button.image = badgeImage(text: badge.text, background: badge.color)
+        button.image?.size = NSSize(width: 28, height: 16)
+        button.imagePosition = .imageOnly
+        button.toolTip = "SwitcherLM (\(badge.text))"
+    }
+
+    private func badgeImage(text: String, background: NSColor) -> NSImage {
+        let size = NSSize(width: 28, height: 16)
+        let image = NSImage(size: size)
+        image.lockFocus()
+
+        let rect = NSRect(origin: .zero, size: size)
+        let rounded = NSBezierPath(roundedRect: rect, xRadius: 5, yRadius: 5)
+        background.setFill()
+        rounded.fill()
+
+        let attrs: [NSAttributedString.Key: Any] = [
+            .font: NSFont.boldSystemFont(ofSize: 10),
+            .foregroundColor: NSColor.white
+        ]
+        let string = NSString(string: text)
+        let textSize = string.size(withAttributes: attrs)
+        let textRect = NSRect(
+            x: (size.width - textSize.width) / 2,
+            y: (size.height - textSize.height) / 2 - 0.5,
+            width: textSize.width,
+            height: textSize.height
+        )
+        string.draw(in: textRect, withAttributes: attrs)
+
+        image.unlockFocus()
+        image.isTemplate = false
+        return image
+    }
+
     @objc private func toggleEnabled() {
         isEnabled.toggle()
         enabledMenuItem.state = isEnabled ? .on : .off
@@ -132,5 +198,9 @@ final class StatusBarController {
 
     @objc private func quit() {
         NSApp.terminate(nil)
+    }
+
+    deinit {
+        layoutTimer?.invalidate()
     }
 }
