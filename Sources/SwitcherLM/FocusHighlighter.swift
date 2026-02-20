@@ -117,11 +117,11 @@ final class FocusHighlighter {
     }
 
     private func showOverlay(frame: CGRect, role: String) {
-        let expanded = frame.insetBy(dx: -3, dy: -3)
+        let snapped = frame.integral
 
         if overlayWindow == nil {
             let window = NSWindow(
-                contentRect: expanded,
+                contentRect: snapped,
                 styleMask: .borderless,
                 backing: .buffered,
                 defer: false
@@ -133,15 +133,15 @@ final class FocusHighlighter {
             window.ignoresMouseEvents = true
             window.collectionBehavior = [.canJoinAllSpaces, .transient]
 
-            let view = HighlightView(frame: expanded)
+            let view = HighlightView(frame: snapped)
             window.contentView = view
             overlayWindow = window
         }
 
-        if expanded != lastFrame || role != lastRole {
-            overlayWindow?.setFrame(expanded, display: true)
-            (overlayWindow?.contentView as? HighlightView)?.frame = expanded
-            lastFrame = expanded
+        if snapped != lastFrame || role != lastRole {
+            overlayWindow?.setFrame(snapped, display: true)
+            (overlayWindow?.contentView as? HighlightView)?.frame = snapped
+            lastFrame = snapped
             lastRole = role
         }
 
@@ -219,11 +219,12 @@ private final class HighlightView: NSView {
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         wantsLayer = true
+        layer?.masksToBounds = true
         layer?.addSublayer(shapeLayer)
         shapeLayer.fillColor = NSColor.clear.cgColor
-        shapeLayer.lineWidth = 2.0
-        shapeLayer.shadowOpacity = 0.8
-        shapeLayer.shadowRadius = 6.0
+        shapeLayer.lineWidth = 2.5
+        shapeLayer.shadowOpacity = 0.65
+        shapeLayer.shadowRadius = 4.0
         shapeLayer.shadowOffset = .zero
         updatePath()
     }
@@ -243,8 +244,10 @@ private final class HighlightView: NSView {
     }
 
     private func updatePath() {
-        let inset = bounds.insetBy(dx: 1, dy: 1)
-        shapeLayer.path = CGPath(roundedRect: inset, cornerWidth: 4, cornerHeight: 4, transform: nil)
+        let inset = bounds.insetBy(dx: 2, dy: 2)
+        let path = CGPath(roundedRect: inset, cornerWidth: 4, cornerHeight: 4, transform: nil)
+        shapeLayer.path = path
+        shapeLayer.shadowPath = path
         shapeLayer.frame = bounds
     }
 }
