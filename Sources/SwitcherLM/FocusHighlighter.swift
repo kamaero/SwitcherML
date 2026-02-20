@@ -37,8 +37,8 @@ final class FocusHighlighter {
             return
         }
 
-        let appFrame = appKitFrame(fromAXFrame: frame)
-        showOverlay(frame: appFrame, role: role)
+        let normalized = normalizeFrame(frame)
+        showOverlay(frame: normalized, role: role)
     }
 
     private func focusedElement() -> AXUIElement? {
@@ -61,11 +61,27 @@ final class FocusHighlighter {
     }
 
     private func attributeFrame(_ element: AXUIElement) -> CGRect? {
+        if let frame = attributeCGRect(element, "AXFrame" as CFString) {
+            return frame
+        }
         guard let position = attributePoint(element, kAXPositionAttribute as CFString),
               let size = attributeSize(element, kAXSizeAttribute as CFString) else {
             return nil
         }
         return CGRect(origin: position, size: size)
+    }
+
+    private func attributeCGRect(_ element: AXUIElement, _ attr: CFString) -> CGRect? {
+        var value: AnyObject?
+        let result = AXUIElementCopyAttributeValue(element, attr, &value)
+        guard result == .success, let value else { return nil }
+        if CFGetTypeID(value) != AXValueGetTypeID() {
+            return nil
+        }
+        let axValue = (value as! AXValue)
+        var rect = CGRect.zero
+        AXValueGetValue(axValue, .cgRect, &rect)
+        return rect
     }
 
     private func attributePoint(_ element: AXUIElement, _ attr: CFString) -> CGPoint? {
@@ -151,8 +167,17 @@ final class FocusHighlighter {
         }
     }
 
-    private func appKitFrame(fromAXFrame frame: CGRect) -> CGRect {
-        guard let screen = screenContaining(point: frame.origin) ?? NSScreen.main else {
+    private func normalizeFrame(_ frame: CGRect) -> CGRect {
+        // Heuristic: choose the frame (direct vs flipped) that best fits visible screens.
+        let direct = frame
+        let flipped = flip(frame)
+        let directScore = bestIntersectionArea(for: direct)
+        let flippedScore = bestIntersectionArea(for: flipped)
+        return flippedScore > directScore ? flipped : direct
+    }
+
+    private func flip(_ frame: CGRect) -> CGRect {
+        guard let screen = screenForBestIntersection(with: frame) ?? NSScreen.main else {
             return frame
         }
         let screenFrame = screen.frame
@@ -160,13 +185,30 @@ final class FocusHighlighter {
         return CGRect(x: frame.origin.x, y: flippedY, width: frame.size.width, height: frame.size.height)
     }
 
-    private func screenContaining(point: CGPoint) -> NSScreen? {
+    private func bestIntersectionArea(for frame: CGRect) -> CGFloat {
+        var best: CGFloat = 0
         for screen in NSScreen.screens {
-            if screen.frame.contains(point) {
-                return screen
+            let intersection = frame.intersection(screen.frame)
+            if intersection.isNull { continue }
+            let area = intersection.width * intersection.height
+            if area > best { best = area }
+        }
+        return best
+    }
+
+    private func screenForBestIntersection(with frame: CGRect) -> NSScreen? {
+        var bestScreen: NSScreen?
+        var best: CGFloat = 0
+        for screen in NSScreen.screens {
+            let intersection = frame.intersection(screen.frame)
+            if intersection.isNull { continue }
+            let area = intersection.width * intersection.height
+            if area > best {
+                best = area
+                bestScreen = screen
             }
         }
-        return nil
+        return bestScreen
     }
 }
 
