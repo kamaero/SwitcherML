@@ -130,7 +130,7 @@ final class FocusHighlighter {
         if !focused { return false }
         let enabled = attributeBool(element, kAXEnabledAttribute as CFString) ?? true
         if !enabled { return false }
-        let editable = attributeBool(element, kAXEditableAttribute as CFString) ?? false
+        let editable = attributeBool(element, "AXEditable" as CFString) ?? false
         return editable
     }
 
