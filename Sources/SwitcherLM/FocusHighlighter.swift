@@ -1,4 +1,5 @@
 import AppKit
+import ApplicationServices
 
 final class FocusHighlighter {
 
@@ -29,9 +30,9 @@ final class FocusHighlighter {
         }
 
         guard let focused = focusedElement(),
-              let role = attributeString(focused, kAXRoleAttribute),
+              let role = attributeString(focused, kAXRoleAttribute as CFString),
               isTextRole(role),
-              let frame = attributeFrame(focused, kAXFrameAttribute) else {
+              let frame = attributeFrame(focused, kAXFrameAttribute as CFString) else {
             hideOverlay()
             return
         }
@@ -44,7 +45,11 @@ final class FocusHighlighter {
         var value: AnyObject?
         let result = AXUIElementCopyAttributeValue(system, kAXFocusedUIElementAttribute as CFString, &value)
         guard result == .success else { return nil }
-        return value as? AXUIElement
+        guard let value else { return nil }
+        if CFGetTypeID(value) != AXUIElementGetTypeID() {
+            return nil
+        }
+        return (value as! AXUIElement)
     }
 
     private func attributeString(_ element: AXUIElement, _ attr: CFString) -> String? {
@@ -57,7 +62,11 @@ final class FocusHighlighter {
     private func attributeFrame(_ element: AXUIElement, _ attr: CFString) -> CGRect? {
         var value: AnyObject?
         let result = AXUIElementCopyAttributeValue(element, attr, &value)
-        guard result == .success, let axValue = value as? AXValue else { return nil }
+        guard result == .success, let value else { return nil }
+        if CFGetTypeID(value) != AXValueGetTypeID() {
+            return nil
+        }
+        let axValue = (value as! AXValue)
         var rect = CGRect.zero
         AXValueGetValue(axValue, .cgRect, &rect)
         return rect
@@ -66,7 +75,7 @@ final class FocusHighlighter {
     private func isTextRole(_ role: String) -> Bool {
         role == (kAXTextFieldRole as String) ||
         role == (kAXTextAreaRole as String) ||
-        role == (kAXSearchFieldRole as String)
+        role == "AXSearchField"
     }
 
     private func showOverlay(frame: CGRect, role: String) {
