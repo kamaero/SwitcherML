@@ -48,6 +48,58 @@ final class SpellCheckService {
         isValid(word: word, language: "ru")
     }
 
+    /// Score-aware overload: applies session context and per-app bias on top of
+    /// the spell-check signal. `threshold` is typically `SettingsManager.shared.conversionThreshold`.
+    ///
+    ///   combinedScore = spellScore × sessionBoost × (1 + appBias × 0.3)
+    ///   spellScore: 1.0 — spell check is confident; 0.6 — only one side valid; 0.0 — no signal
+    func suggestConversion(
+        for word: String,
+        exceptions: Set<String>,
+        sessionBoost: Double,
+        appBias: Double,
+        threshold: Double
+    ) -> String? {
+        let lowered = word.lowercased()
+        if exceptions.contains(lowered) { return nil }
+        if word.count == 1 { return singleLetterSuggestion(for: word) }
+        if LayoutConverter.isMixedScript(word) || !LayoutConverter.hasLetters(word) { return nil }
+        if word.count > settings.maxWordLength { return nil }
+        if settings.skipURLsAndEmail && (Self.isLikelyURLOrPath(word) || Self.isLikelyEmail(word)) {
+            return nil
+        }
+
+        let isLatin = LayoutConverter.isLatin(word)
+        let converted = LayoutConverter.convertPreservingCase(word)
+
+        let isEN: Bool
+        let isRU: Bool
+        if isLatin {
+            isEN = isValidEnglish(word)
+            isRU = isValidRussian(converted)
+        } else if LayoutConverter.isCyrillic(word) {
+            isRU = isValidRussian(word)
+            isEN = isValidEnglish(converted)
+        } else {
+            return nil
+        }
+
+        // Compute spell-check confidence that conversion is the right call
+        let spellScore: Double
+        if isLatin || LayoutConverter.isCyrillic(word) {
+            let originalValid = isLatin ? isEN : isRU
+            let convertedValid = isLatin ? isRU : isEN
+            if originalValid { spellScore = 0.0 }          // definitely correct script, don't convert
+            else if convertedValid { spellScore = 1.0 }    // confident: original wrong, converted valid
+            else { spellScore = 0.6 }                       // both invalid — weak signal
+        } else {
+            return nil
+        }
+
+        let combinedScore = spellScore * sessionBoost * (1.0 + appBias * 0.3)
+        return combinedScore > threshold ? converted : nil
+    }
+
     /// Determines whether a word needs layout switching.
     /// Returns the converted word if switching is recommended, nil otherwise.
     func suggestConversion(for word: String, exceptions: Set<String>) -> String? {

@@ -1,5 +1,9 @@
 import AppKit
 
+extension Notification.Name {
+    static let switcherLMModelStatusChanged = Notification.Name("SwitcherLM.ModelStatusChanged")
+}
+
 final class SettingsWindowController: NSObject, NSWindowDelegate {
 
     private let settings = SettingsManager.shared
@@ -25,6 +29,11 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
     private var russianPopup: NSPopUpButton?
     private var inputSources: [InputSourceSwitcher.InputSourceInfo] = []
 
+    // Smart Conversion section
+    private var thresholdSlider: NSSlider?
+    private var thresholdModeLabel: NSTextField?
+    private var modelStatusLabel: NSTextField?
+
     func showWindow() {
         if let existing = window {
             existing.makeKeyAndOrderFront(nil)
@@ -33,7 +42,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         }
 
         let w = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 440, height: 420),
+            contentRect: NSRect(x: 0, y: 0, width: 440, height: 560),
             styleMask: [.titled, .closable],
             backing: .buffered,
             defer: false
@@ -114,6 +123,31 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         russianPopup = russianRow
         stack.addArrangedSubview(russianRow)
 
+        // Smart Conversion section
+        stack.addArrangedSubview(separator())
+        stack.addArrangedSubview(label(text: "Умная конвертация:"))
+
+        let slider = NSSlider(value: 0.5, minValue: 0.1, maxValue: 0.9, target: self,
+                              action: #selector(changeConversionThreshold))
+        slider.translatesAutoresizingMaskIntoConstraints = false
+        slider.widthAnchor.constraint(equalToConstant: 280).isActive = true
+        thresholdSlider = slider
+        stack.addArrangedSubview(slider)
+
+        let modeLabel = NSTextField(labelWithString: "")
+        modeLabel.translatesAutoresizingMaskIntoConstraints = false
+        modeLabel.font = .systemFont(ofSize: 11)
+        modeLabel.textColor = .secondaryLabelColor
+        thresholdModeLabel = modeLabel
+        stack.addArrangedSubview(modeLabel)
+
+        let mlLabel = NSTextField(labelWithString: "Model: Spell Check + Context")
+        mlLabel.translatesAutoresizingMaskIntoConstraints = false
+        mlLabel.font = .monospacedSystemFont(ofSize: 11, weight: .regular)
+        mlLabel.textColor = .secondaryLabelColor
+        modelStatusLabel = mlLabel
+        stack.addArrangedSubview(mlLabel)
+
         let helpButton = NSButton(title: "Справка", target: self, action: #selector(showHelp))
         helpButton.bezelStyle = .rounded
         stack.addArrangedSubview(helpButton)
@@ -153,8 +187,22 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
 
         syncFromSettings()
 
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleModelStatusChanged(_:)),
+            name: .switcherLMModelStatusChanged,
+            object: nil
+        )
+
         w.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    private func separator() -> NSView {
+        let box = NSBox()
+        box.boxType = .separator
+        box.translatesAutoresizingMaskIntoConstraints = false
+        return box
     }
 
     private func checkbox(title: String, action: Selector) -> NSButton {
@@ -231,7 +279,20 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
 
         selectToastCornerCount(settings.toastCornerCount)
 
+        thresholdSlider?.doubleValue = settings.conversionThreshold
+        updateThresholdModeLabel(threshold: settings.conversionThreshold)
+
         reloadInputSources()
+    }
+
+    private func updateThresholdModeLabel(threshold: Double) {
+        let mode: String
+        switch threshold {
+        case ..<0.35: mode = "Aggressive (converts more)"
+        case 0.65...: mode = "Conservative (converts less)"
+        default:      mode = "Balanced"
+        }
+        thresholdModeLabel?.stringValue = mode
     }
 
     private func selectToastCornerCount(_ value: Int) {
@@ -337,6 +398,18 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         settings.preferredRussianSourceID = item.representedObject as? String
     }
 
+    @objc private func changeConversionThreshold() {
+        let value = thresholdSlider?.doubleValue ?? 0.5
+        settings.conversionThreshold = value
+        updateThresholdModeLabel(threshold: settings.conversionThreshold)
+    }
+
+    @objc private func handleModelStatusChanged(_ notification: Notification) {
+        if let status = notification.userInfo?["status"] as? String {
+            modelStatusLabel?.stringValue = status
+        }
+    }
+
     @objc private func showHelp() {
         let alert = NSAlert()
         alert.messageText = "Как пользоваться SwitcherLM"
@@ -353,6 +426,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
     }
 
     func windowWillClose(_ notification: Notification) {
+        NotificationCenter.default.removeObserver(self, name: .switcherLMModelStatusChanged, object: nil)
         window = nil
     }
 }

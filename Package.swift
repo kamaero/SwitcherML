@@ -14,6 +14,8 @@ let package = Package(
             linkerSettings: [
                 .linkedFramework("Cocoa"),
                 .linkedFramework("Carbon"),
+                .linkedFramework("NaturalLanguage"),
+                .linkedFramework("CreateML"),
             ]
         ),
         .testTarget(

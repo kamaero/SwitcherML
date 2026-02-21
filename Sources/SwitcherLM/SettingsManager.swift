@@ -18,6 +18,7 @@ final class SettingsManager: @unchecked Sendable {
         static let toastCornerCount = "SwitcherLM_ToastCornerCount"
         static let preferredEnglishSourceID = "SwitcherLM_PreferredEnglishSourceID"
         static let preferredRussianSourceID = "SwitcherLM_PreferredRussianSourceID"
+        static let conversionThreshold = "SwitcherLM_ConversionThreshold"
     }
 
     var autoConvertEnabled: Bool {
@@ -94,6 +95,19 @@ final class SettingsManager: @unchecked Sendable {
             } else {
                 defaults.removeObject(forKey: Key.preferredRussianSourceID)
             }
+            notify()
+        }
+    }
+
+    /// Conversion confidence threshold (0.1 = aggressive, 0.9 = conservative).
+    /// Default 0.5 matches the pre-ML spell-check-only behaviour.
+    var conversionThreshold: Double {
+        get {
+            let value = defaults.object(forKey: Key.conversionThreshold) as? Double ?? 0.5
+            return min(max(value, 0.1), 0.9)
+        }
+        set {
+            defaults.set(min(max(newValue, 0.1), 0.9), forKey: Key.conversionThreshold)
             notify()
         }
     }
