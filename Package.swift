@@ -8,9 +8,6 @@ let package = Package(
         .executableTarget(
             name: "SwitcherLM",
             path: "Sources/SwitcherLM",
-            resources: [
-                .copy("Layouts.json")
-            ],
             linkerSettings: [
                 .linkedFramework("Cocoa"),
                 .linkedFramework("Carbon"),
