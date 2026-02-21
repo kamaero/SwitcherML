@@ -12,6 +12,8 @@ SYNC_VERSION_SCRIPT="${PROJECT_DIR}/scripts/sync-version.sh"
 
 CONFIG="release"
 VERBOSE=0
+SKIP_RELEASE=0
+DRAFT=0
 
 for arg in "$@"; do
     case "$arg" in
@@ -21,9 +23,15 @@ for arg in "$@"; do
         --verbose)
             VERBOSE=1
             ;;
+        --no-release)
+            SKIP_RELEASE=1
+            ;;
+        --draft)
+            DRAFT=1
+            ;;
         *)
             echo "Unknown argument: $arg"
-            echo "Usage: ./scripts/package.sh [--debug] [--verbose]"
+            echo "Usage: ./scripts/package.sh [--debug] [--verbose] [--no-release] [--draft]"
             exit 1
             ;;
     esac
@@ -91,3 +99,53 @@ run pkgbuild \
 echo ""
 echo "Package created:"
 echo "  ${PKG_PATH}"
+
+# ── GitHub release ─────────────────────────────────────────────────────────────
+
+if [[ "$SKIP_RELEASE" -eq 1 ]]; then
+    echo ""
+    echo "Skipping GitHub release (--no-release)."
+    exit 0
+fi
+
+if ! command -v gh >/dev/null 2>&1; then
+    echo ""
+    echo "WARNING: gh CLI not found — skipping GitHub release."
+    echo "         Install with: brew install gh"
+    exit 0
+fi
+
+if ! gh auth status >/dev/null 2>&1; then
+    echo ""
+    echo "WARNING: gh CLI is not authenticated — skipping GitHub release."
+    echo "         Run: gh auth login"
+    exit 0
+fi
+
+TAG="v${VERSION}"
+
+# Create and push the git tag (skip if it already exists)
+if git -C "$PROJECT_DIR" rev-parse "$TAG" >/dev/null 2>&1; then
+    echo "==> Tag ${TAG} already exists, reusing"
+else
+    echo "==> Tag ${TAG}"
+    run git -C "$PROJECT_DIR" tag "$TAG"
+    run git -C "$PROJECT_DIR" push origin "$TAG"
+fi
+
+echo "==> GitHub release ${TAG}"
+RELEASE_ARGS=(
+    "$TAG"
+    --title "SwitcherLM ${TAG}"
+    --generate-notes
+    "$PKG_PATH"
+)
+if [[ "$DRAFT" -eq 1 ]]; then
+    RELEASE_ARGS+=(--draft)
+fi
+
+run gh release create "${RELEASE_ARGS[@]}"
+
+echo ""
+echo "Release published:"
+echo "  https://github.com/kamaero/SwitcherML/releases/tag/${TAG}"
