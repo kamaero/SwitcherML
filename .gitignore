@@ -1,0 +1,33 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Swift build artifacts
+.build/
+*.o
+*.d
+
+# Swift Package Manager
+.swiftpm/
+
+# Xcode
+*.xcodeproj/
+xcuserdata/
+*.xcuserdatad/
+DerivedData/
+*.hmap
+
+# Distribution / build output
+dist/
+
+# Claude Code local settings
+.claude/
+
+# Environment & secrets
+.env
+*.key
+*.p12
+*.cer
+*.mobileprovision
