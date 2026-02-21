@@ -1,4 +1,5 @@
 import AppKit
+import UniformTypeIdentifiers
 
 /// Manages a list of words that should not be auto-corrected.
 final class ExceptionsManager {
@@ -97,6 +98,22 @@ final class ExceptionsWindowController: NSObject, NSWindowDelegate, NSTableViewD
         removeButton.action = #selector(removeException)
         contentView.addSubview(removeButton)
 
+        // Export button
+        let exportButton = NSButton(frame: NSRect(x: 205, y: 20, width: 80, height: 30))
+        exportButton.title = "Export…"
+        exportButton.bezelStyle = .rounded
+        exportButton.target = self
+        exportButton.action = #selector(exportExceptions)
+        contentView.addSubview(exportButton)
+
+        // Import button
+        let importButton = NSButton(frame: NSRect(x: 295, y: 20, width: 80, height: 30))
+        importButton.title = "Import…"
+        importButton.bezelStyle = .rounded
+        importButton.target = self
+        importButton.action = #selector(importExceptions)
+        contentView.addSubview(importButton)
+
         w.contentView = contentView
         self.window = w
         reloadData()
@@ -132,6 +149,30 @@ final class ExceptionsWindowController: NSObject, NSWindowDelegate, NSTableViewD
         let row = tableView?.selectedRow ?? -1
         guard row >= 0, row < sortedExceptions.count else { return }
         manager.remove(sortedExceptions[row])
+        reloadData()
+    }
+
+    @objc private func exportExceptions() {
+        let panel = NSSavePanel()
+        panel.allowedContentTypes = [.plainText]
+        panel.nameFieldStringValue = "SwitcherLM-exceptions.txt"
+        panel.message = "Экспорт списка исключений"
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        let content = sortedExceptions.joined(separator: "\n")
+        try? content.write(to: url, atomically: true, encoding: .utf8)
+    }
+
+    @objc private func importExceptions() {
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = [.plainText]
+        panel.allowsMultipleSelection = false
+        panel.message = "Импорт исключений (текстовый файл, по одному слову на строку)"
+        guard panel.runModal() == .OK, let url = panel.url,
+              let content = try? String(contentsOf: url, encoding: .utf8) else { return }
+        let words = content.components(separatedBy: .newlines)
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
+        for word in words { manager.add(word) }
         reloadData()
     }
 

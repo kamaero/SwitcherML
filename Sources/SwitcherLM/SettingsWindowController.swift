@@ -14,6 +14,8 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
     private var doubleShiftCheckbox: NSButton?
     private var singleLetterCheckbox: NSButton?
     private var skipURLsCheckbox: NSButton?
+    private var screenFlashCheckbox: NSButton?
+    private var toastShowWordsCheckbox: NSButton?
 
     private var rejectionField: NSTextField?
     private var rejectionStepper: NSStepper?
@@ -76,6 +78,14 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         let skipURLs = checkbox(title: "Пропускать URL, email и пути", action: #selector(toggleSkipURLs))
         skipURLsCheckbox = skipURLs
         stack.addArrangedSubview(skipURLs)
+
+        let screenFlash = checkbox(title: "Вспышка экрана при конвертации", action: #selector(toggleScreenFlash))
+        screenFlashCheckbox = screenFlash
+        stack.addArrangedSubview(screenFlash)
+
+        let toastWords = checkbox(title: "Показывать слова в toast (слово → конверт.)", action: #selector(toggleToastShowWords))
+        toastShowWordsCheckbox = toastWords
+        stack.addArrangedSubview(toastWords)
 
         stack.addArrangedSubview(label(text: "Порог отклонений (авто-исключения):"))
         let rejectionRow = stepperRow(
@@ -266,6 +276,8 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         doubleShiftCheckbox?.state = settings.doubleShiftEnabled ? .on : .off
         singleLetterCheckbox?.state = settings.singleLetterAutoConvert ? .on : .off
         skipURLsCheckbox?.state = settings.skipURLsAndEmail ? .on : .off
+        screenFlashCheckbox?.state = settings.screenFlashEnabled ? .on : .off
+        toastShowWordsCheckbox?.state = settings.toastShowWords ? .on : .off
 
         rejectionStepper?.integerValue = settings.rejectionThreshold
         rejectionField?.stringValue = "\(settings.rejectionThreshold)"
@@ -360,6 +372,14 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
 
     @objc private func toggleSkipURLs() {
         settings.skipURLsAndEmail = skipURLsCheckbox?.state == .on
+    }
+
+    @objc private func toggleScreenFlash() {
+        settings.screenFlashEnabled = screenFlashCheckbox?.state == .on
+    }
+
+    @objc private func toggleToastShowWords() {
+        settings.toastShowWords = toastShowWordsCheckbox?.state == .on
     }
 
     @objc private func changeRejectionThreshold() {

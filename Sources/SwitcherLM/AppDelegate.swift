@@ -9,9 +9,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let textReplacer = TextReplacer()
     private let mlService = MLService()
     private let exceptionsManager = ExceptionsManager()
+    private let appFilterManager = AppFilterManager()
     private let layoutToastPresenter = LayoutToastPresenter()
+    private let screenFlasher = ScreenFlasher()
     private let settings = SettingsManager.shared
     private var exceptionsWindowController: ExceptionsWindowController?
+    private var appFilterWindowController: AppFilterWindowController?
     private var settingsWindowController: SettingsWindowController?
     private var skipNextWord: Bool = false
 
@@ -52,12 +55,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self?.showExceptionsWindow()
         }
 
+        statusBarController.onShowAppFilters = { [weak self] in
+            self?.showAppFilterWindow()
+        }
+
         statusBarController.onShowSettings = { [weak self] in
             self?.showSettingsWindow()
         }
 
+        // Only show language badge toast for user-initiated layout changes.
+        // Auto-conversions show their own toast (with word pair) directly from onReplace.
         statusBarController.onLayoutChanged = { [weak self] language in
-            self?.layoutToastPresenter.show(language: language)
+            guard let self, !self.isReplacing else { return }
+            self.layoutToastPresenter.show(language: language)
         }
 
         mlService.onAutoException = { [weak self] word in
@@ -85,6 +95,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         keyboardMonitor.shouldConvert = { [weak self] word in
             guard let self, !self.isReplacing else { return nil }
             guard self.settings.autoConvertEnabled else { return nil }
+
+            // Skip password / secure text fields
+            if self.isFocusedOnSecureField() { return nil }
+
+            // Skip apps in the blacklist
+            let bundleID = NSWorkspace.shared.frontmostApplication?.bundleIdentifier ?? ""
+            if self.appFilterManager.isBlocked(bundleID) { return nil }
 
             if self.skipNextWord {
                 self.skipNextWord = false
@@ -117,6 +134,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
             // Switch keyboard layout to match the target language
             InputSourceSwitcher.switchToMatch(convertedText: replacement)
+
+            // Toast with conversion text + screen flash (suppresses onLayoutChanged toast via isReplacing)
+            let language: InputSourceSwitcher.Language = LayoutConverter.isCyrillic(replacement) ? .russian : .english
+            self.layoutToastPresenter.show(language: language, conversion: (from: original, to: replacement))
+            self.screenFlasher.flash(language: language)
 
             self.statusBarController.incrementStats()
             self.mlService.recordAccepted(word: original)
@@ -260,10 +282,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func maybeRetrain() {
-        // Retrain every 100 new labeled samples after the first 200
-        if sampleStore.labeledCount % 100 == 0 {
-            trainer.trainIfReady(samples: sampleStore.labeledSamples)
-        }
+        // OnDeviceTrainer.trainIfReady has its own lastTrainedCount guard —
+        // calling it unconditionally is safe and avoids missing triggers from the %100 trick.
+        trainer.trainIfReady(samples: sampleStore.labeledSamples)
     }
 
     private func postModelStatus(_ status: String) {
@@ -363,6 +384,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         )
         keyboardMonitor.clearLastReplacement()
 
+        // Treat Cmd+Z undo as an explicit rejection so the ML pipeline learns from it
+        sampleStore.labelLast(word: last.original, label: "skip")
+        mlService.recordRejection(word: last.original)
+        let bundleID = NSWorkspace.shared.frontmostApplication?.bundleIdentifier ?? "unknown"
+        appMemory.recordRejection(bundleID: bundleID)
+        statusBarController.incrementRejections()
+        maybeRetrain()
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
             self?.isReplacing = false
         }
@@ -377,11 +406,37 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         exceptionsWindowController?.showWindow()
     }
 
+    private func showAppFilterWindow() {
+        if appFilterWindowController == nil {
+            appFilterWindowController = AppFilterWindowController(manager: appFilterManager)
+        }
+        appFilterWindowController?.showWindow()
+    }
+
     private func showSettingsWindow() {
         if settingsWindowController == nil {
             settingsWindowController = SettingsWindowController()
         }
         settingsWindowController?.showWindow()
+    }
+
+    // MARK: - Secure field detection
+
+    /// Returns true when the currently focused UI element is a password field.
+    /// Uses the Accessibility API (requires the Accessibility permission already granted).
+    private func isFocusedOnSecureField() -> Bool {
+        let systemWide = AXUIElementCreateSystemWide()
+        var focusedRef: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(
+            systemWide,
+            "AXFocusedUIElement" as CFString,
+            &focusedRef
+        ) == .success, let ref = focusedRef else { return false }
+        guard CFGetTypeID(ref) == AXUIElementGetTypeID() else { return false }
+        let element = ref as! AXUIElement  // safe: type ID confirmed above
+        var subroleRef: CFTypeRef?
+        AXUIElementCopyAttributeValue(element, "AXSubrole" as CFString, &subroleRef)
+        return (subroleRef as? String) == "AXSecureTextField"
     }
 
 }

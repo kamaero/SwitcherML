@@ -12,6 +12,7 @@ final class StatusBarController {
 
     var onToggleEnabled: ((Bool) -> Void)?
     var onShowExceptions: (() -> Void)?
+    var onShowAppFilters: (() -> Void)?
     var onShowSettings: (() -> Void)?
     var onLayoutChanged: ((InputSourceSwitcher.Language) -> Void)?
 
@@ -68,6 +69,15 @@ final class StatusBarController {
         )
         exceptionsItem.target = self
         menu.addItem(exceptionsItem)
+
+        // App Filters
+        let filtersItem = NSMenuItem(
+            title: "App Filters...",
+            action: #selector(showAppFilters),
+            keyEquivalent: ""
+        )
+        filtersItem.target = self
+        menu.addItem(filtersItem)
 
         // Settings
         let settingsItem = NSMenuItem(
@@ -188,6 +198,10 @@ final class StatusBarController {
 
     @objc private func showExceptions() {
         onShowExceptions?()
+    }
+
+    @objc private func showAppFilters() {
+        onShowAppFilters?()
     }
 
     @objc private func showSettings() {

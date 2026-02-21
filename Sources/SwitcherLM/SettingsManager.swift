@@ -19,6 +19,8 @@ final class SettingsManager: @unchecked Sendable {
         static let preferredEnglishSourceID = "SwitcherLM_PreferredEnglishSourceID"
         static let preferredRussianSourceID = "SwitcherLM_PreferredRussianSourceID"
         static let conversionThreshold = "SwitcherLM_ConversionThreshold"
+        static let screenFlashEnabled = "SwitcherLM_ScreenFlashEnabled"
+        static let toastShowWords = "SwitcherLM_ToastShowWords"
     }
 
     var autoConvertEnabled: Bool {
@@ -110,6 +112,18 @@ final class SettingsManager: @unchecked Sendable {
             defaults.set(min(max(newValue, 0.1), 0.9), forKey: Key.conversionThreshold)
             notify()
         }
+    }
+
+    /// Full-screen color flash on auto-conversion (red for EN, blue for RU).
+    var screenFlashEnabled: Bool {
+        get { defaults.object(forKey: Key.screenFlashEnabled) as? Bool ?? true }
+        set { defaults.set(newValue, forKey: Key.screenFlashEnabled); notify() }
+    }
+
+    /// Show "original → converted" text in the conversion toast.
+    var toastShowWords: Bool {
+        get { defaults.object(forKey: Key.toastShowWords) as? Bool ?? true }
+        set { defaults.set(newValue, forKey: Key.toastShowWords); notify() }
     }
 
     private func notify() {

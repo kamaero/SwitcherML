@@ -6,6 +6,18 @@ macOS menu-bar app that automatically detects and fixes keyboard layout mistakes
 
 ---
 
+## Recent updates (v1.0.4)
+
+- **Screen flash** — brief translucent pulse on every auto-conversion (red = switched to EN, blue = RU). Configurable in Settings.
+- **Conversion toast** — the toast now shows the word pair (`EN  ghbdtn → привет`) instead of just the language badge. Configurable in Settings.
+- **App Filters** — blacklist apps where SwitcherLM should stay silent (e.g. Terminal, IDE). Menu-bar → App Filters…
+- **Exceptions export / import** — back up or share your exceptions list as plain text. Exceptions → Export… / Import…
+- **Password field detection** — auto-conversion is automatically skipped in secure text fields (password inputs) via the Accessibility API.
+- **Cmd+Z as rejection signal** — undoing a conversion with Cmd+Z now also labels the training sample as `"skip"` and records the rejection, so the ML pipeline learns from it exactly like a backspace rejection.
+- **Retraining trigger fix** — replaced the fragile `labeledCount % 100 == 0` check with a direct call to `OnDeviceTrainer.trainIfReady()`, which already tracks its own `lastTrainedCount`. Retraining now fires reliably every 100 new labeled samples regardless of the exact count.
+
+---
+
 ## Requirements
 
 - macOS 13 Ventura or later
@@ -96,6 +108,7 @@ During inference the predictor is only authoritative at `confidence > 0.7`. Belo
 | Shortcut | Action |
 |---|---|
 | Double Left Shift | Force-convert selected text (or current word) |
+| Cmd+Z (within 5 s of replacement) | Undo last auto-conversion (also labels sample as rejected) |
 | ← Arrow (within 5 s of replacement) | Undo last auto-conversion |
 | → Arrow (before word boundary) | Skip auto-conversion for the next word |
 
@@ -125,6 +138,8 @@ Open via menu-bar icon → Settings…
 | Double-Shift force convert | On | Enable/disable the Double-LShift shortcut |
 | Single-letter smart convert | On | Convert single-letter layout mistakes (e.g. `ш` → `i`) |
 | Skip URLs and email | On | Don't convert tokens that look like URLs, emails, paths |
+| Screen flash on conversion | On | Brief translucent red/blue full-screen pulse on every auto-conversion |
+| Show words in toast | On | Display `"EN  word → converted"` in the toast instead of just the language badge |
 | Rejection threshold | 3 | Rejections before a word is auto-added to exceptions |
 | Max word length | 40 | Longer tokens are never converted |
 | **Conversion threshold** | 0.5 | Phase 1 sensitivity: 0.1 Aggressive → 0.9 Conservative |
@@ -152,6 +167,10 @@ AppDelegate
     │
     ├─ ContextLanguageTracker NLLanguageRecognizer, 400-char rolling buffer
     ├─ AppLanguageMemory      Per-bundleID EN/RU statistics
+    ├─ AppFilterManager       Bundle ID blacklist (skip conversion in specified apps)
+    │
+    ├─ LayoutToastPresenter   Corner badge + conversion word-pair toast
+    ├─ ScreenFlasher          Full-screen translucent color overlay on conversion
     │
     ├─ SampleStore            5 000-sample ring buffer, labeled by feedback
     ├─ OnDeviceTrainer        CreateML training on background thread
