@@ -13,6 +13,7 @@ final class SettingsStatsTests: XCTestCase {
         UserDefaults.standard.removeObject(forKey: "SwitcherLM_SkipURLsAndEmail")
         UserDefaults.standard.removeObject(forKey: "SwitcherLM_ToastDuration")
         UserDefaults.standard.removeObject(forKey: "SwitcherLM_ToastCornerCount")
+        UserDefaults.standard.removeObject(forKey: "SwitcherLM_UndoHotkey")
         UserDefaults.standard.removeObject(forKey: "SwitcherLM_TotalConverted")
         UserDefaults.standard.removeObject(forKey: "SwitcherLM_TotalRejected")
         UserDefaults.standard.removeObject(forKey: "SwitcherLM_DailyStats")
@@ -28,6 +29,7 @@ final class SettingsStatsTests: XCTestCase {
         XCTAssertTrue(settings.skipURLsAndEmail)
         XCTAssertEqual(settings.toastDuration, 0.55, accuracy: 0.001)
         XCTAssertEqual(settings.toastCornerCount, 4)
+        XCTAssertEqual(settings.undoHotkey, .leftArrow)
     }
 
     func testStatsPersistence() {

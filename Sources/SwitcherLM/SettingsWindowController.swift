@@ -26,6 +26,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
     private var toastDurationField: NSTextField?
     private var toastDurationStepper: NSStepper?
     private var toastCornersPopup: NSPopUpButton?
+    private var undoHotkeyPopup: NSPopUpButton?
 
     private var englishPopup: NSPopUpButton?
     private var russianPopup: NSPopUpButton?
@@ -122,6 +123,12 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         toastCornersPopup = cornersRow
         cornersRow.addItems(withTitles: ["1", "2", "4"])
         stack.addArrangedSubview(cornersRow)
+
+        stack.addArrangedSubview(label(text: "Undo hotkey:"))
+        let undoRow = popupRow(action: #selector(changeUndoHotkey))
+        undoHotkeyPopup = undoRow
+        undoRow.addItems(withTitles: ["Disabled", "Left Arrow", "Cmd+Z"])
+        stack.addArrangedSubview(undoRow)
 
         stack.addArrangedSubview(label(text: "Английская раскладка:"))
         let englishRow = popupRow(action: #selector(changeEnglishSource))
@@ -290,6 +297,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         toastDurationField?.stringValue = String(format: "%.1f", settings.toastDuration)
 
         selectToastCornerCount(settings.toastCornerCount)
+        selectUndoHotkey(settings.undoHotkey)
 
         thresholdSlider?.doubleValue = settings.conversionThreshold
         updateThresholdModeLabel(threshold: settings.conversionThreshold)
@@ -316,6 +324,16 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
             }
         }
         toastCornersPopup?.selectItem(withTitle: "4")
+    }
+
+    private func selectUndoHotkey(_ hotkey: SettingsManager.UndoHotkey) {
+        let title: String
+        switch hotkey {
+        case .disabled:  title = "Disabled"
+        case .leftArrow: title = "Left Arrow"
+        case .cmdZ:      title = "Cmd+Z"
+        }
+        undoHotkeyPopup?.selectItem(withTitle: title)
     }
 
     private func reloadInputSources() {
@@ -408,6 +426,19 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         selectToastCornerCount(settings.toastCornerCount)
     }
 
+    @objc private func changeUndoHotkey() {
+        let selected = undoHotkeyPopup?.selectedItem?.title ?? "Left Arrow"
+        switch selected {
+        case "Disabled":
+            settings.undoHotkey = .disabled
+        case "Cmd+Z":
+            settings.undoHotkey = .cmdZ
+        default:
+            settings.undoHotkey = .leftArrow
+        }
+        selectUndoHotkey(settings.undoHotkey)
+    }
+
     @objc private func changeEnglishSource() {
         guard let item = englishPopup?.selectedItem else { return }
         settings.preferredEnglishSourceID = item.representedObject as? String
@@ -437,7 +468,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         """
         • Автоконвертация срабатывает на границе слова (пробел, таб, пунктуация).
         • Double-Shift конвертирует только выделенный текст.
-        • Стрелка ← отменяет последнюю замену (в течение 5 секунд).
+        • Hotkey Undo настраивается в Settings (Disabled / Left Arrow / Cmd+Z).
         • Стрелка → отключает автоконвертацию для следующего слова.
         • Список исключений — через меню «Exceptions…».
         """

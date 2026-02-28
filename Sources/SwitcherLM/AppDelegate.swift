@@ -30,8 +30,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let trainer = OnDeviceTrainer()
     private var coreMLPredictor: CoreMLPredictor?
 
-    private let undoWindow: TimeInterval = 5.0
-
     /// Tracks whether we're currently performing a replacement (to ignore our own events).
     private var isReplacing = false
 
@@ -130,10 +128,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             // Store for backspace-rejection tracking
             self.keyboardMonitor.lastConversion = (original: original, replacement: replacement)
             self.keyboardMonitor.lastConversionTime = ProcessInfo.processInfo.systemUptime
-            self.keyboardMonitor.recordReplacement(original: original, replacement: replacement, boundary: boundary)
+            let frontmostApp = NSWorkspace.shared.frontmostApplication
+            self.keyboardMonitor.recordReplacement(
+                original: original,
+                replacement: replacement,
+                boundary: boundary,
+                appPID: frontmostApp?.processIdentifier ?? 0,
+                appBundleID: frontmostApp?.bundleIdentifier ?? ""
+            )
 
             // Switch keyboard layout to match the target language
             InputSourceSwitcher.switchToMatch(convertedText: replacement)
+            // TIS notifications can occasionally be delayed/missed; force a sync.
+            statusBarController.syncLayoutBadge()
 
             // Toast with conversion text + screen flash (suppresses onLayoutChanged toast via isReplacing)
             let language: InputSourceSwitcher.Language = LayoutConverter.isCyrillic(replacement) ? .russian : .english
@@ -371,11 +378,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Undo last replacement
 
     private func handleUndoReplacement() {
+        guard keyboardMonitor.hasPendingUndo else { return }
         guard let last = keyboardMonitor.lastReplacement else { return }
-        if keyboardMonitor.hasTypedSinceReplacement { return }
-
-        let now = ProcessInfo.processInfo.systemUptime
-        if now - last.time > undoWindow { return }
 
         isReplacing = true
         textReplacer.replace(

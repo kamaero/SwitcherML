@@ -18,6 +18,9 @@ final class StatusBarController {
 
     private(set) var isEnabled: Bool = true
     private let statsManager = StatsManager.shared
+    private var layoutObserverToken: NSObjectProtocol?
+    private var layoutSyncTimer: Timer?
+    private var lastShownSourceID: String?
 
     func setup() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
@@ -35,6 +38,11 @@ final class StatusBarController {
     func incrementRejections() {
         statsManager.recordRejected()
         updateStatsMenuItem()
+    }
+
+    /// Forces menu-bar badge refresh from the current macOS input source.
+    func syncLayoutBadge() {
+        refreshLayoutIfNeeded(force: true)
     }
 
     private func buildMenu() {
@@ -126,18 +134,31 @@ final class StatusBarController {
     // MARK: - Layout tracking via TIS notification
 
     private func startLayoutTracking() {
-        DistributedNotificationCenter.default().addObserver(
-            self,
-            selector: #selector(layoutDidChange),
-            name: NSNotification.Name("com.apple.Carbon.TISNotifySelectedKeyboardInputSourceChanged"),
-            object: nil
-        )
-        // Set badge to current layout immediately
-        updateLayoutBadge(for: InputSourceSwitcher.currentLanguage())
+        layoutObserverToken = DistributedNotificationCenter.default().addObserver(
+            forName: NSNotification.Name("com.apple.Carbon.TISNotifySelectedKeyboardInputSourceChanged"),
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.layoutDidChange()
+        }
+        // Periodic sync is a safety net for missed/late distributed notifications.
+        layoutSyncTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            self?.refreshLayoutIfNeeded(force: false)
+        }
+        refreshLayoutIfNeeded(force: true)
     }
 
-    @objc private func layoutDidChange() {
-        let language = InputSourceSwitcher.currentLanguage()
+    private func layoutDidChange() {
+        refreshLayoutIfNeeded(force: true)
+    }
+
+    private func refreshLayoutIfNeeded(force: Bool) {
+        let currentSourceID = InputSourceSwitcher.currentSourceID()
+        if !force, currentSourceID == lastShownSourceID {
+            return
+        }
+        lastShownSourceID = currentSourceID
+        let language = InputSourceSwitcher.currentLanguage(for: currentSourceID)
         updateLayoutBadge(for: language)
         if language != .unknown {
             onLayoutChanged?(language)
@@ -213,6 +234,9 @@ final class StatusBarController {
     }
 
     deinit {
-        DistributedNotificationCenter.default().removeObserver(self)
+        if let token = layoutObserverToken {
+            DistributedNotificationCenter.default().removeObserver(token)
+        }
+        layoutSyncTimer?.invalidate()
     }
 }
