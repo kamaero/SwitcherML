@@ -1,9 +1,26 @@
 {
   "builtTestProducts" : [
-
+    {
+      "binaryPath" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMPackageTests.xctest/Contents/MacOS/SwitcherLMPackageTests",
+      "packagePath" : "/Users/xkr/Projects/SwitcherLM",
+      "productName" : "SwitcherLMPackageTests"
+    }
   ],
   "copyCommands" : {
-
+    "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM_SwitcherLM.bundle/Layouts.json" : {
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/Layouts.json"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM_SwitcherLM.bundle/Layouts.json"
+        }
+      ]
+    }
   },
   "explicitTargetDependencyImportCheckingMode" : {
     "none" : {
@@ -28,6 +45,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/EventMarker.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/ExceptionsWindowController.swift"
         },
         {
@@ -40,7 +61,19 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/LayoutConfig.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/LayoutConfigLoader.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/LayoutConverter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/LayoutToastPresenter.swift"
         },
         {
           "kind" : "file",
@@ -48,7 +81,19 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/SettingsManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/SettingsWindowController.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/SpellCheckService.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/StatsManager.swift"
         },
         {
           "kind" : "file",
@@ -64,7 +109,15 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/DerivedSources/resource_bundle_accessor.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/swift-version--1AB21518FC5DEDBE.txt"
+        },
+        {
+          "kind" : "virtual",
+          "name" : "<SwitcherLM-arm64-apple-macosx26.0-release.module-resources>"
         },
         {
           "kind" : "file",
@@ -76,15 +129,23 @@
       "moduleOutputPath" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/Modules/SwitcherLM.swiftmodule",
       "objects" : [
         "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/AppDelegate.swift.o",
+        "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/EventMarker.swift.o",
         "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/ExceptionsWindowController.swift.o",
         "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/InputSourceSwitcher.swift.o",
         "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/KeyboardMonitor.swift.o",
+        "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutConfig.swift.o",
+        "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutConfigLoader.swift.o",
         "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutConverter.swift.o",
+        "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutToastPresenter.swift.o",
         "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/MLService.swift.o",
+        "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/SettingsManager.swift.o",
+        "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/SettingsWindowController.swift.o",
         "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/SpellCheckService.swift.o",
+        "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/StatsManager.swift.o",
         "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/StatusBarController.swift.o",
         "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/TextReplacer.swift.o",
-        "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/main.swift.o"
+        "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/main.swift.o",
+        "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/resource_bundle_accessor.swift.o"
       ],
       "otherArguments" : [
         "-target",
@@ -96,7 +157,7 @@
         "-O",
         "-j10",
         "-DSWIFT_PACKAGE",
-        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_AVAILABLE",
         "-module-cache-path",
         "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/ModuleCache",
         "-parseable-output",
@@ -134,6 +195,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/EventMarker.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/ExceptionsWindowController.swift.o"
         },
         {
@@ -146,7 +211,19 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutConfig.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutConfigLoader.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutConverter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutToastPresenter.swift.o"
         },
         {
           "kind" : "file",
@@ -154,7 +231,19 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/SettingsManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/SettingsWindowController.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/SpellCheckService.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/StatsManager.swift.o"
         },
         {
           "kind" : "file",
@@ -170,23 +259,230 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/resource_bundle_accessor.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/Modules/SwitcherLM.swiftmodule"
         }
       ],
       "prepareForIndexing" : false,
       "sources" : [
         "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/AppDelegate.swift",
+        "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/EventMarker.swift",
         "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/ExceptionsWindowController.swift",
         "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/InputSourceSwitcher.swift",
         "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/KeyboardMonitor.swift",
+        "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/LayoutConfig.swift",
+        "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/LayoutConfigLoader.swift",
         "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/LayoutConverter.swift",
+        "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/LayoutToastPresenter.swift",
         "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/MLService.swift",
+        "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/SettingsManager.swift",
+        "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/SettingsWindowController.swift",
         "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/SpellCheckService.swift",
+        "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/StatsManager.swift",
         "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/StatusBarController.swift",
         "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/TextReplacer.swift",
-        "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/main.swift"
+        "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/main.swift",
+        "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/DerivedSources/resource_bundle_accessor.swift"
       ],
       "tempsPath" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build",
+      "wholeModuleOptimization" : true
+    },
+    "C.SwitcherLMPackageTests-arm64-apple-macosx26.0-release.module" : {
+      "executable" : "/Library/Developer/CommandLineTools/usr/bin/swiftc",
+      "fileList" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMPackageTests.build/sources",
+      "importPath" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMPackageTests.derived/runner.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/swift-version--1AB21518FC5DEDBE.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/Modules/SwitcherLMTests.swiftmodule"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMPackageTests.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "SwitcherLMPackageTests",
+      "moduleOutputPath" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/Modules/SwitcherLMPackageTests.swiftmodule",
+      "objects" : [
+        "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMPackageTests.build/runner.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx13.0",
+        "-whole-module-optimization",
+        "-num-threads",
+        "10",
+        "-serialize-diagnostics",
+        "-O",
+        "-enable-testing",
+        "-Xfrontend",
+        "-enable-cross-import-overlays",
+        "-j10",
+        "-DSWIFT_PACKAGE",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-emit-objc-header",
+        "-emit-objc-header-path",
+        "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMPackageTests.build/include/SwitcherLMPackageTests-Swift.h",
+        "-I",
+        "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+        "-L",
+        "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+        "-plugin-path",
+        "/Library/Developer/CommandLineTools/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "switcherlm"
+      ],
+      "outputFileMapPath" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMPackageTests.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMPackageTests.build/runner.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/Modules/SwitcherLMPackageTests.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMPackageTests.derived/runner.swift"
+      ],
+      "tempsPath" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMPackageTests.build",
+      "wholeModuleOptimization" : true
+    },
+    "C.SwitcherLMTests-arm64-apple-macosx26.0-release.module" : {
+      "executable" : "/Library/Developer/CommandLineTools/usr/bin/swiftc",
+      "fileList" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMTests.build/sources",
+      "importPath" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/Tests/SwitcherLMTests/HeuristicsTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/Tests/SwitcherLMTests/LayoutConverterTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/Tests/SwitcherLMTests/SettingsStatsTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/swift-version--1AB21518FC5DEDBE.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMTests.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "SwitcherLMTests",
+      "moduleOutputPath" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/Modules/SwitcherLMTests.swiftmodule",
+      "objects" : [
+        "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMTests.build/HeuristicsTests.swift.o",
+        "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMTests.build/LayoutConverterTests.swift.o",
+        "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMTests.build/SettingsStatsTests.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx13.0",
+        "-whole-module-optimization",
+        "-num-threads",
+        "10",
+        "-serialize-diagnostics",
+        "-index-store-path",
+        "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/index/store",
+        "-O",
+        "-enable-testing",
+        "-Xfrontend",
+        "-enable-cross-import-overlays",
+        "-j10",
+        "-DSWIFT_PACKAGE",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-swift-version",
+        "5",
+        "-I",
+        "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+        "-L",
+        "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+        "-plugin-path",
+        "/Library/Developer/CommandLineTools/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "switcherlm"
+      ],
+      "outputFileMapPath" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMTests.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMTests.build/HeuristicsTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMTests.build/LayoutConverterTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMTests.build/SettingsStatsTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/Modules/SwitcherLMTests.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/xkr/Projects/SwitcherLM/Tests/SwitcherLMTests/HeuristicsTests.swift",
+        "/Users/xkr/Projects/SwitcherLM/Tests/SwitcherLMTests/LayoutConverterTests.swift",
+        "/Users/xkr/Projects/SwitcherLM/Tests/SwitcherLMTests/SettingsStatsTests.swift"
+      ],
+      "tempsPath" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMTests.build",
       "wholeModuleOptimization" : true
     }
   },
@@ -202,15 +498,23 @@
       "switcherlm",
       "-c",
       "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/AppDelegate.swift",
+      "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/EventMarker.swift",
       "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/ExceptionsWindowController.swift",
       "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/InputSourceSwitcher.swift",
       "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/KeyboardMonitor.swift",
+      "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/LayoutConfig.swift",
+      "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/LayoutConfigLoader.swift",
       "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/LayoutConverter.swift",
+      "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/LayoutToastPresenter.swift",
       "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/MLService.swift",
+      "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/SettingsManager.swift",
+      "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/SettingsWindowController.swift",
       "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/SpellCheckService.swift",
+      "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/StatsManager.swift",
       "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/StatusBarController.swift",
       "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/TextReplacer.swift",
       "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/main.swift",
+      "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/DerivedSources/resource_bundle_accessor.swift",
       "-I",
       "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/Modules",
       "-target",
@@ -222,7 +526,7 @@
       "-O",
       "-j10",
       "-DSWIFT_PACKAGE",
-      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_AVAILABLE",
       "-module-cache-path",
       "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/ModuleCache",
       "-parseable-output",
@@ -253,18 +557,142 @@
       "switcherlm",
       "-driver-use-frontend-path",
       "/Library/Developer/CommandLineTools/usr/bin/swiftc"
+    ],
+    "SwitcherLMPackageTests" : [
+      "/Library/Developer/CommandLineTools/usr/bin/swiftc",
+      "-module-name",
+      "SwitcherLMPackageTests",
+      "-package-name",
+      "switcherlm",
+      "-c",
+      "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMPackageTests.derived/runner.swift",
+      "-I",
+      "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/Modules",
+      "-target",
+      "arm64-apple-macosx13.0",
+      "-whole-module-optimization",
+      "-num-threads",
+      "10",
+      "-serialize-diagnostics",
+      "-O",
+      "-enable-testing",
+      "-Xfrontend",
+      "-enable-cross-import-overlays",
+      "-j10",
+      "-DSWIFT_PACKAGE",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-emit-objc-header",
+      "-emit-objc-header-path",
+      "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMPackageTests.build/include/SwitcherLMPackageTests-Swift.h",
+      "-I",
+      "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+      "-L",
+      "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+      "-plugin-path",
+      "/Library/Developer/CommandLineTools/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "switcherlm",
+      "-driver-use-frontend-path",
+      "/Library/Developer/CommandLineTools/usr/bin/swiftc"
+    ],
+    "SwitcherLMTests" : [
+      "/Library/Developer/CommandLineTools/usr/bin/swiftc",
+      "-module-name",
+      "SwitcherLMTests",
+      "-package-name",
+      "switcherlm",
+      "-c",
+      "/Users/xkr/Projects/SwitcherLM/Tests/SwitcherLMTests/HeuristicsTests.swift",
+      "/Users/xkr/Projects/SwitcherLM/Tests/SwitcherLMTests/LayoutConverterTests.swift",
+      "/Users/xkr/Projects/SwitcherLM/Tests/SwitcherLMTests/SettingsStatsTests.swift",
+      "-I",
+      "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/Modules",
+      "-target",
+      "arm64-apple-macosx13.0",
+      "-whole-module-optimization",
+      "-num-threads",
+      "10",
+      "-serialize-diagnostics",
+      "-index-store-path",
+      "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/index/store",
+      "-O",
+      "-enable-testing",
+      "-Xfrontend",
+      "-enable-cross-import-overlays",
+      "-j10",
+      "-DSWIFT_PACKAGE",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-swift-version",
+      "5",
+      "-I",
+      "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+      "-L",
+      "/Library/Developer/CommandLineTools/Library/Developer/Frameworks",
+      "-plugin-path",
+      "/Library/Developer/CommandLineTools/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "switcherlm",
+      "-driver-use-frontend-path",
+      "/Library/Developer/CommandLineTools/usr/bin/swiftc"
     ]
   },
   "targetDependencyMap" : {
     "SwitcherLM" : [
 
+    ],
+    "SwitcherLMPackageTests" : [
+      "SwitcherLMTests",
+      "SwitcherLM"
+    ],
+    "SwitcherLMTests" : [
+      "SwitcherLM"
     ]
   },
   "testDiscoveryCommands" : {
 
   },
   "testEntryPointCommands" : {
+    "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMPackageTests.derived/runner.swift" : {
+      "inputs" : [
 
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMPackageTests.derived/runner.swift"
+        }
+      ]
+    }
   },
   "traitConfiguration" : {
     "default" : {
@@ -285,6 +713,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/EventMarker.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/ExceptionsWindowController.swift"
         },
         {
@@ -297,7 +729,19 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/LayoutConfig.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/LayoutConfigLoader.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/LayoutConverter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/LayoutToastPresenter.swift"
         },
         {
           "kind" : "file",
@@ -305,7 +749,19 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/SettingsManager.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/SettingsWindowController.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/SpellCheckService.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/StatsManager.swift"
         },
         {
           "kind" : "file",
@@ -318,6 +774,10 @@
         {
           "kind" : "file",
           "name" : "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/main.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/DerivedSources/resource_bundle_accessor.swift"
         }
       ],
       "outputFilePath" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/sources"
@@ -335,6 +795,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/EventMarker.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/ExceptionsWindowController.swift.o"
         },
         {
@@ -347,7 +811,19 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutConfig.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutConfigLoader.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutConverter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutToastPresenter.swift.o"
         },
         {
           "kind" : "file",
@@ -355,7 +831,19 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/SettingsManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/SettingsWindowController.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/SpellCheckService.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/StatsManager.swift.o"
         },
         {
           "kind" : "file",
@@ -368,9 +856,147 @@
         {
           "kind" : "file",
           "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/main.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/resource_bundle_accessor.swift.o"
         }
       ],
       "outputFilePath" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.product/Objects.LinkFileList"
+    },
+    "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMPackageTests.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMPackageTests.derived/runner.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMPackageTests.build/sources"
+    },
+    "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMPackageTests.product/Objects.LinkFileList" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<link-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/AppDelegate.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/EventMarker.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/ExceptionsWindowController.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/InputSourceSwitcher.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/KeyboardMonitor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutConfig.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutConfigLoader.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutConverter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutToastPresenter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/MLService.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/SettingsManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/SettingsWindowController.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/SpellCheckService.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/StatsManager.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/StatusBarController.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/TextReplacer.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/main.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/resource_bundle_accessor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMPackageTests.build/runner.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMTests.build/HeuristicsTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMTests.build/LayoutConverterTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMTests.build/SettingsStatsTests.swift.o"
+        }
+      ],
+      "outputFilePath" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMPackageTests.product/Objects.LinkFileList"
+    },
+    "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMTests.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/Tests/SwitcherLMTests/HeuristicsTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/Tests/SwitcherLMTests/LayoutConverterTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/xkr/Projects/SwitcherLM/Tests/SwitcherLMTests/SettingsStatsTests.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLMTests.build/sources"
     },
     "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/swift-version--1AB21518FC5DEDBE.txt" : {
       "alwaysOutOfDate" : true,

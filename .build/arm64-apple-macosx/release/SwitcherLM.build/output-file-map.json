@@ -10,6 +10,12 @@
     "swift-dependencies": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/AppDelegate.swiftdeps",
     "diagnostics": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/AppDelegate.dia"
   },
+  "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/EventMarker.swift": {
+    "object": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/EventMarker.swift.o",
+    "swiftmodule": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/EventMarker~partial.swiftmodule",
+    "swift-dependencies": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/EventMarker.swiftdeps",
+    "diagnostics": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/EventMarker.dia"
+  },
   "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/ExceptionsWindowController.swift": {
     "object": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/ExceptionsWindowController.swift.o",
     "swiftmodule": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/ExceptionsWindowController~partial.swiftmodule",
@@ -28,11 +34,29 @@
     "swift-dependencies": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/KeyboardMonitor.swiftdeps",
     "diagnostics": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/KeyboardMonitor.dia"
   },
+  "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/LayoutConfig.swift": {
+    "object": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutConfig.swift.o",
+    "swiftmodule": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutConfig~partial.swiftmodule",
+    "swift-dependencies": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutConfig.swiftdeps",
+    "diagnostics": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutConfig.dia"
+  },
+  "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/LayoutConfigLoader.swift": {
+    "object": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutConfigLoader.swift.o",
+    "swiftmodule": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutConfigLoader~partial.swiftmodule",
+    "swift-dependencies": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutConfigLoader.swiftdeps",
+    "diagnostics": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutConfigLoader.dia"
+  },
   "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/LayoutConverter.swift": {
     "object": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutConverter.swift.o",
     "swiftmodule": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutConverter~partial.swiftmodule",
     "swift-dependencies": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutConverter.swiftdeps",
     "diagnostics": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutConverter.dia"
+  },
+  "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/LayoutToastPresenter.swift": {
+    "object": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutToastPresenter.swift.o",
+    "swiftmodule": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutToastPresenter~partial.swiftmodule",
+    "swift-dependencies": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutToastPresenter.swiftdeps",
+    "diagnostics": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/LayoutToastPresenter.dia"
   },
   "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/MLService.swift": {
     "object": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/MLService.swift.o",
@@ -40,11 +64,29 @@
     "swift-dependencies": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/MLService.swiftdeps",
     "diagnostics": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/MLService.dia"
   },
+  "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/SettingsManager.swift": {
+    "object": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/SettingsManager.swift.o",
+    "swiftmodule": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/SettingsManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/SettingsManager.swiftdeps",
+    "diagnostics": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/SettingsManager.dia"
+  },
+  "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/SettingsWindowController.swift": {
+    "object": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/SettingsWindowController.swift.o",
+    "swiftmodule": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/SettingsWindowController~partial.swiftmodule",
+    "swift-dependencies": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/SettingsWindowController.swiftdeps",
+    "diagnostics": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/SettingsWindowController.dia"
+  },
   "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/SpellCheckService.swift": {
     "object": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/SpellCheckService.swift.o",
     "swiftmodule": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/SpellCheckService~partial.swiftmodule",
     "swift-dependencies": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/SpellCheckService.swiftdeps",
     "diagnostics": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/SpellCheckService.dia"
+  },
+  "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/StatsManager.swift": {
+    "object": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/StatsManager.swift.o",
+    "swiftmodule": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/StatsManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/StatsManager.swiftdeps",
+    "diagnostics": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/StatsManager.dia"
   },
   "/Users/xkr/Projects/SwitcherLM/Sources/SwitcherLM/StatusBarController.swift": {
     "object": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/StatusBarController.swift.o",
@@ -63,5 +105,11 @@
     "swiftmodule": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/main~partial.swiftmodule",
     "swift-dependencies": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/main.swiftdeps",
     "diagnostics": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/main.dia"
+  },
+  "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/DerivedSources/resource_bundle_accessor.swift": {
+    "object": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/resource_bundle_accessor.swift.o",
+    "swiftmodule": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/resource_bundle_accessor~partial.swiftmodule",
+    "swift-dependencies": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/resource_bundle_accessor.swiftdeps",
+    "diagnostics": "/Users/xkr/Projects/SwitcherLM/.build/arm64-apple-macosx/release/SwitcherLM.build/resource_bundle_accessor.dia"
   }
 }

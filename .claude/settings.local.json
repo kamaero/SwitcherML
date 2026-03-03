@@ -2,7 +2,14 @@
   "permissions": {
     "allow": [
       "Bash(swift build:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(swift test:*)",
+      "Bash(gh run:*)",
+      "Bash(brew list:*)",
+      "Bash(brew install:*)",
+      "Bash(gh auth:*)",
+      "Bash(gh release:*)",
+      "Bash(source:*)"
     ]
   }
 }
