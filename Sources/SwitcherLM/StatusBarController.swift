@@ -18,6 +18,7 @@ final class StatusBarController {
     private(set) var isEnabled: Bool = true
     private let statsManager = StatsManager.shared
     private var layoutTimer: Timer?
+    private var notificationObserver: NSObjectProtocol?
     private var lastLanguage: InputSourceSwitcher.Language = .unknown
 
     func setup() {
@@ -119,10 +120,27 @@ final class StatusBarController {
 
     private func startLayoutTracking() {
         layoutTimer?.invalidate()
-        layoutTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
+
+        // Primary: instant notification when system input source changes
+        notificationObserver = DistributedNotificationCenter.default().addObserver(
+            forName: NSNotification.Name("com.apple.Carbon.TISNotifySelectedKeyboardInputSourceChanged"),
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
             self?.pollLayout()
         }
-        layoutTimer?.tolerance = 0.05
+
+        // Fallback: timer-based polling at a relaxed interval
+        layoutTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            self?.pollLayout()
+        }
+        layoutTimer?.tolerance = 0.2
+        pollLayout()
+    }
+
+    /// Force an immediate layout check and badge update.
+    /// Call after programmatic input source switches for instant badge sync.
+    func forceRefreshLayout() {
         pollLayout()
     }
 
@@ -202,5 +220,8 @@ final class StatusBarController {
 
     deinit {
         layoutTimer?.invalidate()
+        if let observer = notificationObserver {
+            DistributedNotificationCenter.default().removeObserver(observer)
+        }
     }
 }

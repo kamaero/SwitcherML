@@ -2,23 +2,48 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "master" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "master" ]
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Set up Swift
-        uses: swift-actions/setup-swift@v2
         with:
-          swift-version: "5.9"
+          fetch-depth: 0  # Needed to read tags for versioning
 
       - name: Build
+        run: swift build -c release
+
+      - name: Determine version
+        id: version
+        run: |
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "latest_tag=$LATEST_TAG" >> "$GITHUB_OUTPUT"
+          # Strip 'v' prefix and split
+          VER="${LATEST_TAG#v}"
+          MAJOR=$(echo "$VER" | cut -d. -f1)
+          MINOR=$(echo "$VER" | cut -d. -f2)
+          PATCH=$(echo "$VER" | cut -d. -f3)
+          NEW_PATCH=$((PATCH + 1))
+          NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+          NEW_TAG="v$NEW_VERSION"
+          echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+          echo "new_tag=$NEW_TAG" >> "$GITHUB_OUTPUT"
+          echo "Version: $LATEST_TAG → $NEW_TAG"
+
+      - name: Update Info.plist version
+        if: github.event_name == 'push'
+        run: |
+          VERSION="${{ steps.version.outputs.new_version }}"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" Info.plist
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $VERSION" Info.plist
+
+      - name: Rebuild with updated version
+        if: github.event_name == 'push'
         run: swift build -c release
 
       - name: Archive app bundle
@@ -36,3 +61,40 @@ jobs:
         with:
           name: SwitcherLM.app
           path: artifacts/SwitcherLM.app
+
+      - name: Create release archive
+        if: github.event_name == 'push'
+        run: |
+          cd artifacts
+          zip -r ../SwitcherLM.zip SwitcherLM.app
+
+      - name: Generate release notes
+        if: github.event_name == 'push'
+        run: |
+          PREV_TAG="${{ steps.version.outputs.latest_tag }}"
+          VERSION="${{ steps.version.outputs.new_version }}"
+
+          {
+            echo "## Changes"
+            echo ""
+            git log "${PREV_TAG}..HEAD" --pretty=format:"- %s" 2>/dev/null || echo "- Initial release"
+            echo ""
+            echo ""
+            echo "## Installation"
+            echo ""
+            echo "1. Download \`SwitcherLM.zip\`"
+            echo "2. Unzip and move \`SwitcherLM.app\` to Applications"
+            echo "3. Grant Accessibility permissions when prompted"
+          } > release_notes.md
+
+      - name: Create GitHub Release
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ steps.version.outputs.new_tag }}"
+          VERSION="${{ steps.version.outputs.new_version }}"
+
+          gh release create "$TAG" SwitcherLM.zip \
+            --title "SwitcherLM $VERSION" \
+            --notes-file release_notes.md

@@ -95,6 +95,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
             // Switch keyboard layout to match the target language
             InputSourceSwitcher.switchToMatch(convertedText: replacement)
+            self.statusBarController.forceRefreshLayout()
 
             self.statusBarController.incrementStats()
             self.mlService.recordAccepted(word: original)
@@ -163,6 +164,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         textReplacer.sendPaste()
 
         InputSourceSwitcher.switchToMatch(convertedText: converted)
+        statusBarController.forceRefreshLayout()
         statusBarController.incrementStats()
         print("Force-converted selection: \"\(text)\" → \"\(converted)\"")
 
@@ -211,6 +213,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             characterCount: last.replacement.count + last.boundary.count,
             with: last.original + last.boundary
         )
+        // Switch layout back to match the original text
+        InputSourceSwitcher.switchToMatch(convertedText: last.original)
+        statusBarController.forceRefreshLayout()
         keyboardMonitor.clearLastReplacement()
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
