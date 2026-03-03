@@ -24,6 +24,9 @@ final class SettingsManager: @unchecked Sendable {
         static let toastCornerCount = "SwitcherLM_ToastCornerCount"
         static let preferredEnglishSourceID = "SwitcherLM_PreferredEnglishSourceID"
         static let preferredRussianSourceID = "SwitcherLM_PreferredRussianSourceID"
+        static let conversionThreshold = "SwitcherLM_ConversionThreshold"
+        static let screenFlashEnabled = "SwitcherLM_ScreenFlashEnabled"
+        static let toastShowWords = "SwitcherLM_ToastShowWords"
         static let undoHotkey = "SwitcherLM_UndoHotkey"
     }
 
@@ -103,6 +106,30 @@ final class SettingsManager: @unchecked Sendable {
             }
             notify()
         }
+    }
+
+    /// Conversion confidence threshold (0.1 = aggressive, 0.9 = conservative).
+    var conversionThreshold: Double {
+        get {
+            let value = defaults.object(forKey: Key.conversionThreshold) as? Double ?? 0.5
+            return min(max(value, 0.1), 0.9)
+        }
+        set {
+            defaults.set(min(max(newValue, 0.1), 0.9), forKey: Key.conversionThreshold)
+            notify()
+        }
+    }
+
+    /// Full-screen color flash on auto-conversion.
+    var screenFlashEnabled: Bool {
+        get { defaults.object(forKey: Key.screenFlashEnabled) as? Bool ?? true }
+        set { defaults.set(newValue, forKey: Key.screenFlashEnabled); notify() }
+    }
+
+    /// Show "original → converted" text in the conversion toast.
+    var toastShowWords: Bool {
+        get { defaults.object(forKey: Key.toastShowWords) as? Bool ?? true }
+        set { defaults.set(newValue, forKey: Key.toastShowWords); notify() }
     }
 
     /// Hotkey used to undo the last auto-conversion.
