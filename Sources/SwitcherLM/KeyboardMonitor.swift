@@ -235,13 +235,10 @@ final class KeyboardMonitor {
             return event
         }
 
+        // Generic undo hotkey check — runs before navigation keys so any key can be assigned.
+        if checkUndoHotkey(keyCode: keyCode, modifiers: modifiers) { return nil }
+
         if keyCode == Int64(kVK_LeftArrow) {
-            let hotkey = settings.undoHotkey
-            let noModifiers = modifiers.isEmpty
-            if hotkey == .leftArrow && noModifiers && hasPendingUndo {
-                onUndoLastReplacement?()
-                return nil // suppress arrow move — used as undo hotkey
-            }
             isEditingExistingText = true
             lastEventWasBoundary = false
             return event
@@ -258,14 +255,6 @@ final class KeyboardMonitor {
             isEditingExistingText = true
             lastEventWasBoundary = false
             return event
-        }
-
-        // Cmd+Z undo is opt-in via Settings.
-        if settings.undoHotkey == .cmdZ && keyCode == Int64(kVK_ANSI_Z) && modifiers == .maskCommand {
-            if hasPendingUndo {
-                onUndoLastReplacement?()
-                return nil // suppress — we handled it
-            }
         }
 
         // Any non-backspace key resets the deletion tracking
@@ -318,6 +307,28 @@ final class KeyboardMonitor {
         }
 
         return event
+    }
+
+    // MARK: - Undo hotkey check
+
+    /// Returns true and fires undo if the event matches the configured undo hotkey.
+    private func checkUndoHotkey(keyCode: Int64, modifiers: CGEventFlags) -> Bool {
+        let storedCode = settings.undoKeyCode
+        guard storedCode >= 0, hasPendingUndo else { return false }
+        guard keyCode == Int64(storedCode) else { return false }
+
+        let storedMods = NSEvent.ModifierFlags(rawValue: settings.undoModifiers)
+            .intersection([.command, .shift, .option, .control])
+        // modifiers from CGEvent use mask* names — convert to NSEvent flags for comparison
+        var eventMods = NSEvent.ModifierFlags()
+        if modifiers.contains(.maskCommand)   { eventMods.insert(.command) }
+        if modifiers.contains(.maskShift)     { eventMods.insert(.shift) }
+        if modifiers.contains(.maskAlternate) { eventMods.insert(.option) }
+        if modifiers.contains(.maskControl)   { eventMods.insert(.control) }
+
+        guard eventMods == storedMods else { return false }
+        onUndoLastReplacement?()
+        return true
     }
 
     // MARK: - Word processing

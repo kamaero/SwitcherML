@@ -1,15 +1,10 @@
-import Foundation
+import AppKit
+import Carbon.HIToolbox
 
 final class SettingsManager: @unchecked Sendable {
     static let shared = SettingsManager()
 
     static let didChangeNotification = Notification.Name("SwitcherLM.SettingsChanged")
-
-    enum UndoHotkey: String {
-        case disabled
-        case leftArrow
-        case cmdZ
-    }
 
     private let defaults = UserDefaults.standard
 
@@ -27,7 +22,50 @@ final class SettingsManager: @unchecked Sendable {
         static let conversionThreshold = "SwitcherLM_ConversionThreshold"
         static let screenFlashEnabled = "SwitcherLM_ScreenFlashEnabled"
         static let toastShowWords = "SwitcherLM_ToastShowWords"
-        static let undoHotkey = "SwitcherLM_UndoHotkey"
+        // Custom hotkey storage (replaces old UndoHotkey enum)
+        static let undoKeyCode = "SwitcherLM_UndoKeyCode2"
+        static let undoModifiers = "SwitcherLM_UndoModifiers2"
+        // Legacy key (read-once for migration)
+        static let undoHotkeyLegacy = "SwitcherLM_UndoHotkey"
+    }
+
+    /// -1 means hotkey is disabled. Default: kVK_LeftArrow (123) with no modifiers.
+    var undoKeyCode: Int {
+        get {
+            if defaults.object(forKey: Key.undoKeyCode) == nil {
+                return migratedKeyCode()
+            }
+            return defaults.integer(forKey: Key.undoKeyCode)
+        }
+        set { defaults.set(newValue, forKey: Key.undoKeyCode); notify() }
+    }
+
+    var undoModifiers: UInt {
+        get {
+            if defaults.object(forKey: Key.undoKeyCode) == nil {
+                return migratedModifiers()
+            }
+            return UInt(bitPattern: defaults.integer(forKey: Key.undoModifiers))
+        }
+        set { defaults.set(Int(bitPattern: newValue), forKey: Key.undoModifiers); notify() }
+    }
+
+    /// Migrate from old UndoHotkey enum string to keyCode/modifiers on first read.
+    private func migratedKeyCode() -> Int {
+        let legacy = defaults.string(forKey: Key.undoHotkeyLegacy) ?? "leftArrow"
+        switch legacy {
+        case "disabled": return -1
+        case "cmdZ":     return kVK_ANSI_Z
+        default:         return kVK_LeftArrow
+        }
+    }
+
+    private func migratedModifiers() -> UInt {
+        let legacy = defaults.string(forKey: Key.undoHotkeyLegacy) ?? "leftArrow"
+        switch legacy {
+        case "cmdZ": return NSEvent.ModifierFlags.command.rawValue
+        default:     return 0
+        }
     }
 
     var autoConvertEnabled: Bool {
@@ -130,19 +168,6 @@ final class SettingsManager: @unchecked Sendable {
     var toastShowWords: Bool {
         get { defaults.object(forKey: Key.toastShowWords) as? Bool ?? true }
         set { defaults.set(newValue, forKey: Key.toastShowWords); notify() }
-    }
-
-    /// Hotkey used to undo the last auto-conversion.
-    /// Default: left arrow (legacy behavior). Cmd+Z is opt-in.
-    var undoHotkey: UndoHotkey {
-        get {
-            let raw = defaults.string(forKey: Key.undoHotkey) ?? UndoHotkey.leftArrow.rawValue
-            return UndoHotkey(rawValue: raw) ?? .leftArrow
-        }
-        set {
-            defaults.set(newValue.rawValue, forKey: Key.undoHotkey)
-            notify()
-        }
     }
 
     private func notify() {
