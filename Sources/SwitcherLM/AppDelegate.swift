@@ -15,8 +15,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var settingsWindowController: SettingsWindowController?
     private var skipNextWord: Bool = false
 
-    private let undoWindow: TimeInterval = 5.0
-
     /// Tracks whether we're currently performing a replacement (to ignore our own events).
     private var isReplacing = false
 
@@ -91,11 +89,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             // Store for backspace-rejection tracking
             self.keyboardMonitor.lastConversion = (original: original, replacement: replacement)
             self.keyboardMonitor.lastConversionTime = ProcessInfo.processInfo.systemUptime
-            self.keyboardMonitor.recordReplacement(original: original, replacement: replacement, boundary: boundary)
+            let frontmostApp = NSWorkspace.shared.frontmostApplication
+            self.keyboardMonitor.recordReplacement(
+                original: original,
+                replacement: replacement,
+                boundary: boundary,
+                appPID: frontmostApp?.processIdentifier ?? 0,
+                appBundleID: frontmostApp?.bundleIdentifier ?? ""
+            )
 
             // Switch keyboard layout to match the target language
             InputSourceSwitcher.switchToMatch(convertedText: replacement)
-            self.statusBarController.forceRefreshLayout()
+            // TIS notifications can occasionally be delayed/missed; force a sync.
+            self.statusBarController.syncLayoutBadge()
 
             self.statusBarController.incrementStats()
             self.mlService.recordAccepted(word: original)
@@ -164,7 +170,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         textReplacer.sendPaste()
 
         InputSourceSwitcher.switchToMatch(convertedText: converted)
-        statusBarController.forceRefreshLayout()
+        statusBarController.syncLayoutBadge()
         statusBarController.incrementStats()
         print("Force-converted selection: \"\(text)\" → \"\(converted)\"")
 
@@ -202,11 +208,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Undo last replacement
 
     private func handleUndoReplacement() {
+        guard keyboardMonitor.hasPendingUndo else { return }
         guard let last = keyboardMonitor.lastReplacement else { return }
-        if keyboardMonitor.hasTypedSinceReplacement { return }
-
-        let now = ProcessInfo.processInfo.systemUptime
-        if now - last.time > undoWindow { return }
 
         isReplacing = true
         textReplacer.replace(
@@ -215,7 +218,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         )
         // Switch layout back to match the original text
         InputSourceSwitcher.switchToMatch(convertedText: last.original)
-        statusBarController.forceRefreshLayout()
+        statusBarController.syncLayoutBadge()
         keyboardMonitor.clearLastReplacement()
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in

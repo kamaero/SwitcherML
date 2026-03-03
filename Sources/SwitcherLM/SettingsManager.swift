@@ -5,6 +5,12 @@ final class SettingsManager: @unchecked Sendable {
 
     static let didChangeNotification = Notification.Name("SwitcherLM.SettingsChanged")
 
+    enum UndoHotkey: String {
+        case disabled
+        case leftArrow
+        case cmdZ
+    }
+
     private let defaults = UserDefaults.standard
 
     private enum Key {
@@ -18,6 +24,7 @@ final class SettingsManager: @unchecked Sendable {
         static let toastCornerCount = "SwitcherLM_ToastCornerCount"
         static let preferredEnglishSourceID = "SwitcherLM_PreferredEnglishSourceID"
         static let preferredRussianSourceID = "SwitcherLM_PreferredRussianSourceID"
+        static let undoHotkey = "SwitcherLM_UndoHotkey"
     }
 
     var autoConvertEnabled: Bool {
@@ -94,6 +101,19 @@ final class SettingsManager: @unchecked Sendable {
             } else {
                 defaults.removeObject(forKey: Key.preferredRussianSourceID)
             }
+            notify()
+        }
+    }
+
+    /// Hotkey used to undo the last auto-conversion.
+    /// Default: left arrow (legacy behavior). Cmd+Z is opt-in.
+    var undoHotkey: UndoHotkey {
+        get {
+            let raw = defaults.string(forKey: Key.undoHotkey) ?? UndoHotkey.leftArrow.rawValue
+            return UndoHotkey(rawValue: raw) ?? .leftArrow
+        }
+        set {
+            defaults.set(newValue.rawValue, forKey: Key.undoHotkey)
             notify()
         }
     }

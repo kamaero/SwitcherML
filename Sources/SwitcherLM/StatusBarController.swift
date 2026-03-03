@@ -17,9 +17,9 @@ final class StatusBarController {
 
     private(set) var isEnabled: Bool = true
     private let statsManager = StatsManager.shared
-    private var layoutTimer: Timer?
-    private var notificationObserver: NSObjectProtocol?
-    private var lastLanguage: InputSourceSwitcher.Language = .unknown
+    private var layoutObserverToken: NSObjectProtocol?
+    private var layoutSyncTimer: Timer?
+    private var lastShownSourceID: String?
 
     func setup() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
@@ -39,6 +39,11 @@ final class StatusBarController {
     func incrementRejections() {
         statsManager.recordRejected()
         updateStatsMenuItem()
+    }
+
+    /// Forces menu-bar badge refresh from the current macOS input source.
+    func syncLayoutBadge() {
+        refreshLayoutIfNeeded(force: true)
     }
 
     private func buildMenu() {
@@ -119,35 +124,27 @@ final class StatusBarController {
     }
 
     private func startLayoutTracking() {
-        layoutTimer?.invalidate()
-
-        // Primary: instant notification when system input source changes
-        notificationObserver = DistributedNotificationCenter.default().addObserver(
+        layoutObserverToken = DistributedNotificationCenter.default().addObserver(
             forName: NSNotification.Name("com.apple.Carbon.TISNotifySelectedKeyboardInputSourceChanged"),
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            self?.pollLayout()
+            self?.refreshLayoutIfNeeded(force: true)
         }
-
-        // Fallback: timer-based polling at a relaxed interval
-        layoutTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            self?.pollLayout()
+        // Periodic sync is a safety net for missed/late distributed notifications.
+        layoutSyncTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            self?.refreshLayoutIfNeeded(force: false)
         }
-        layoutTimer?.tolerance = 0.2
-        pollLayout()
+        refreshLayoutIfNeeded(force: true)
     }
 
-    /// Force an immediate layout check and badge update.
-    /// Call after programmatic input source switches for instant badge sync.
-    func forceRefreshLayout() {
-        pollLayout()
-    }
-
-    private func pollLayout() {
-        let language = InputSourceSwitcher.currentLanguage()
-        guard language != lastLanguage else { return }
-        lastLanguage = language
+    private func refreshLayoutIfNeeded(force: Bool) {
+        let currentSourceID = InputSourceSwitcher.currentSourceID()
+        if !force, currentSourceID == lastShownSourceID {
+            return
+        }
+        lastShownSourceID = currentSourceID
+        let language = InputSourceSwitcher.currentLanguage(for: currentSourceID)
         updateLayoutBadge(for: language)
         if language != .unknown {
             onLayoutChanged?(language)
@@ -219,9 +216,9 @@ final class StatusBarController {
     }
 
     deinit {
-        layoutTimer?.invalidate()
-        if let observer = notificationObserver {
-            DistributedNotificationCenter.default().removeObserver(observer)
+        if let token = layoutObserverToken {
+            DistributedNotificationCenter.default().removeObserver(token)
         }
+        layoutSyncTimer?.invalidate()
     }
 }

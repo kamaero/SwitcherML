@@ -67,13 +67,37 @@ struct InputSourceSwitcher {
     }
 
     static func currentLanguage() -> Language {
-        guard let id = currentSourceID() else { return .unknown }
+        currentLanguage(for: currentSourceID())
+    }
+
+    static func currentLanguage(for sourceID: String?) -> Language {
+        guard let id = sourceID else { return .unknown }
+
+        // Respect user-selected source IDs first.
+        let settings = SettingsManager.shared
+        if let preferredEN = settings.preferredEnglishSourceID, id == preferredEN {
+            return .english
+        }
+        if let preferredRU = settings.preferredRussianSourceID, id == preferredRU {
+            return .russian
+        }
+
         if englishAlternatives.contains(id) {
             return .english
         }
         if russianAlternatives.contains(id) {
             return .russian
         }
+
+        // Fallback heuristic for non-default variants not listed above.
+        let lowerID = id.lowercased()
+        if lowerID.contains("russian") || lowerID.contains(".ru") {
+            return .russian
+        }
+        if lowerID.contains("abc") || lowerID.contains(".us") || lowerID.contains("english") {
+            return .english
+        }
+
         return .unknown
     }
 

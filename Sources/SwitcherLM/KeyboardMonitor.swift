@@ -40,8 +40,15 @@ final class KeyboardMonitor {
     var lastConversion: (original: String, replacement: String)?
     /// When the last conversion occurred (system uptime)
     var lastConversionTime: TimeInterval = 0
-    /// Track the last replacement (for undo)
-    var lastReplacement: (original: String, replacement: String, boundary: String, time: TimeInterval)?
+    /// Track the last replacement (for undo) and where it happened.
+    var lastReplacement: (
+        original: String,
+        replacement: String,
+        boundary: String,
+        time: TimeInterval,
+        appPID: pid_t,
+        appBundleID: String
+    )?
     /// True if user typed after the last replacement
     var hasTypedSinceReplacement: Bool = false
     /// Time window (seconds) to consider a rejection valid
@@ -53,6 +60,28 @@ final class KeyboardMonitor {
 
     // -- Last completed word (for force-convert) --
     private(set) var lastTypedWord: String = ""
+
+    /// True when there is a recent replacement eligible for undo.
+    var hasPendingUndo: Bool {
+        guard let last = lastReplacement, !hasTypedSinceReplacement else { return false }
+        guard ProcessInfo.processInfo.systemUptime - last.time <= 5.0 else { return false }
+
+        // Do not hijack undo in another app: only allow in the same frontmost app
+        // where the auto-replacement happened.
+        let frontmost = NSWorkspace.shared.frontmostApplication
+        if let app = frontmost {
+            if last.appPID != 0 && app.processIdentifier != last.appPID {
+                return false
+            }
+            if !last.appBundleID.isEmpty,
+               let bundleID = app.bundleIdentifier,
+               bundleID != last.appBundleID {
+                return false
+            }
+        }
+
+        return true
+    }
 
     // -- Context for single-letter conversion --
     private var lastEventWasBoundary: Bool = true
@@ -133,12 +162,20 @@ final class KeyboardMonitor {
         isDeletingConversion = false
     }
 
-    func recordReplacement(original: String, replacement: String, boundary: String) {
+    func recordReplacement(
+        original: String,
+        replacement: String,
+        boundary: String,
+        appPID: pid_t,
+        appBundleID: String
+    ) {
         lastReplacement = (
             original: original,
             replacement: replacement,
             boundary: boundary,
-            time: ProcessInfo.processInfo.systemUptime
+            time: ProcessInfo.processInfo.systemUptime,
+            appPID: appPID,
+            appBundleID: appBundleID
         )
         hasTypedSinceReplacement = false
     }
@@ -190,6 +227,7 @@ final class KeyboardMonitor {
         }
 
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
+        let modifiers = event.flags.intersection([.maskCommand, .maskShift, .maskAlternate, .maskControl])
 
         // Backspace — track rejection of conversions
         if keyCode == Int64(kVK_Delete) {
@@ -198,7 +236,12 @@ final class KeyboardMonitor {
         }
 
         if keyCode == Int64(kVK_LeftArrow) {
-            onUndoLastReplacement?()
+            let hotkey = settings.undoHotkey
+            let noModifiers = modifiers.isEmpty
+            if hotkey == .leftArrow && noModifiers && hasPendingUndo {
+                onUndoLastReplacement?()
+                return nil // suppress arrow move — used as undo hotkey
+            }
             isEditingExistingText = true
             lastEventWasBoundary = false
             return event
@@ -215,6 +258,14 @@ final class KeyboardMonitor {
             isEditingExistingText = true
             lastEventWasBoundary = false
             return event
+        }
+
+        // Cmd+Z undo is opt-in via Settings.
+        if settings.undoHotkey == .cmdZ && keyCode == Int64(kVK_ANSI_Z) && modifiers == .maskCommand {
+            if hasPendingUndo {
+                onUndoLastReplacement?()
+                return nil // suppress — we handled it
+            }
         }
 
         // Any non-backspace key resets the deletion tracking
